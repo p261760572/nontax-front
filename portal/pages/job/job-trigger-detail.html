@@ -1,0 +1,278 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>触发器</title>
+    <link href="../../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="../../lib/layer/theme/default/layer.css" rel="stylesheet">
+    <link href="../../lib/jquery-easyui/themes/bootstrap/easyui.min.css" rel="stylesheet">
+</head>
+
+<body>
+<div class="page">
+    <form id="ff" action="/action/bm/job-trigger/view" data-options="onSerialize:$.noop,onLoad:onLoadForm">
+        <table class="table" style="width: 970px;">
+            <caption>触发器</caption>
+            <tbody>
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>触发器名称</label>
+                    <span style="color: red;">*</span>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="trigger_name" class="easyui-validatebox" data-options="required:true">
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>触发器组</label>
+                    <span style="color: red;">*</span>
+                </td>
+                <td class="col-sm-4">
+                    <!-- <input type="text" name="trigger_group" class="easyui-validatebox" data-options="required:true"> -->
+                    <select id="trigger_group" name="trigger_group" class="easyui-validatebox"
+                            data-options="required:true">
+                        <option value="">--请选择--</option>
+                        <option value="default" selected>默认组</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>任务ID</label>
+                    <span style="color: red;">*</span>
+                </td>
+                <td class="col-sm-4">
+                    <!-- <input type="text" name="job_name" class="easyui-validatebox" data-options="required:true"> -->
+                    <div class="col-sm-12" style="padding:0;">
+                        <input type="text" id="job_name" name="job_name" class="easyui-combobox"
+                               data-options="required:true,editable:false,valueField:'job_name',textField:'job_name'">
+                    </div>
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>优先级</label>
+                    <span style="color: red;">*</span>
+                </td>
+                <td class="col-sm-4">
+                    <!-- <input type="text" name="priority" class="easyui-validatebox" data-options="required:true"> -->
+                    <select id="priority" name="priority" class="easyui-validatebox" data-options="required:true">
+                        <option value="">--请选择--</option>
+                        <option value="1">低</option>
+                        <option value="2">中</option>
+                        <option value="3">高</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+
+                <td class="text-right col-sm-2">
+                    <label>触发类型</label>
+                    <span style="color: red;">*</span>
+                </td>
+                <td class="col-sm-4">
+                    <!-- <input type="text" name="trigger_type" class="easyui-validatebox" data-options="required:true"> -->
+                    <select id="trigger_type" name="trigger_type" class="easyui-validatebox"
+                            data-options="required:true">
+                        <option value="">--请选择--</option>
+                        <option value="simple" selected>简单型</option>
+                        <option value="cron">定时型</option>
+                    </select>
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>触发器handler</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="trigger_handler" class="easyui-validatebox" data-options="">
+                </td>
+            </tr>
+            <tr class="trigger_simple">
+                <td class="text-right col-sm-2">
+                    <label>重复次数</label>
+                    <span style="color: red;">*</span>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="repeat_count" class="easyui-validatebox" data-options="required:true">
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>重复间隔(s)</label>
+                    <span style="color: red;">*</span>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="repeat_interval" class="easyui-validatebox" data-options="required:true">
+                </td>
+            </tr>
+
+            <tr>
+                <td class="trigger_cron text-right col-sm-2">
+                    <label>CRON表达式</label>
+                    <span style="color: red;">*</span>
+                </td>
+                <td class="trigger_cron col-sm-4">
+                    <input type="text" name="cron_expression" class="easyui-validatebox" data-options="required:true">
+                </td>
+
+            </tr>
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>描述</label>
+                </td>
+                <td colspan="3" class="col-sm-10">
+                    <input type="text" name="description" class="easyui-validatebox" data-options="">
+                </td>
+            </tr>
+            <tr class="tf tf-update">
+                <td class="text-right col-sm-2">
+                    <label>下次触发时间</label>
+                </td>
+                <td class="col-sm-4">
+                    <div class="input-group">
+                        <input type="text" name="next_fire_time" class="easyui-validatebox" data-options="" disabled>
+                        <span class="input-group-btn">
+                            <button class="btn" type="button" onclick="$$.submit(this)" data-options="url:'/action/bm/job-trigger/reset-next-fire'">重置</button>
+                        </span>
+                    </div>
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>上次触发时间</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="prev_fire_time" class="easyui-validatebox" data-options="" disabled>
+                </td>
+            </tr>
+            <tr class="tf tf-update">
+                <td class="text-right col-sm-2">
+                    <label>开始时间</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="start_time" class="easyui-validatebox" data-options="" disabled>
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>结束时间</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="end_time" class="easyui-validatebox" data-options="" disabled>
+                </td>
+            </tr>
+            <tr class="tf tf-update">
+                <td class="text-right col-sm-2">
+                    <label>错过的指示</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="misfire_instr" class="easyui-validatebox" data-options="" disabled>
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>触发状态</label>
+                    <span style="color: red;">*</span>
+                </td>
+                <td class="col-sm-4">
+                    <!-- <input type="text" name="trigger_state" class="easyui-validatebox" data-options="required:true" disabled> -->
+                    <select id="trigger_state" name="trigger_state" class="easyui-validatebox"
+                            data-options="required:true">
+                        <option value="">--请选择--</option>
+                        <option value="WAITING">等待中</option>
+                        <option value="COMPLETE">已完成</option>
+                    </select>
+                </td>
+            </tr>
+            <tr class="trigger_simple tf tf-update">
+                <td class="text-right col-sm-2">
+                    <label>触发次数</label>
+                    <span style="color: red;">*</span>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="times_triggered" class="easyui-validatebox" data-options="required:true"
+                           disabled>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div style="width: 1000px;">
+            <div class="row">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-6">
+                    <button type="button" class="btn btn-primary tf tf-create"
+                            data-options="datagrid:'#dg',url:'/action/bm/job-trigger/create'" onclick="$$.submit(this)">
+                        新增提交
+                    </button>
+                    <button type="button" class="btn btn-primary tf tf-update"
+                            data-options="datagrid:'#dg',url:'/action/bm/job-trigger/update'" onclick="$$.submit(this)">
+                        编辑提交
+                    </button>
+                    <button type="button" class="btn btn-default btn-outline" onclick="$$.close()">关闭</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="../../lib/jquery/jquery.min.js"></script>
+<script src="../../lib/layer/layer.js"></script>
+<script src="../../lib/My97DatePicker/WdatePicker.js"></script>
+<script src="../../lib/jquery-easyui/jquery.easyui.min.js"></script>
+<script src="../../js/base.js"></script>
+<script src="../../js/st.js"></script>
+<script src="../../js/param.js"></script>
+<script src="../../js/district.js"></script>
+<!-- <script src="../js/district.js"></script> -->
+<script>
+    var query = $$.parseQueryString();
+    var displayType = query.displayType;
+    var operateType = query.operateType;
+
+    function onLoadForm(data) {
+        var trigger_type = data.data.trigger_type;
+        if (trigger_type == 'simple') {
+            $.extend(data.data, data.simple);
+
+        } else if (trigger_type == 'cron') {
+            $.extend(data.data, data.cron);
+        }
+
+        setTimeout(function () {
+            $('#trigger_type').trigger('change');
+        });
+
+        data.data.next_fire_time = formatDate(data.data.next_fire_time);
+        data.data.prev_fire_time = formatDate(data.data.prev_fire_time);
+    }
+
+    function onSerializeForm(data) {
+
+    }
+
+    function formatDate(value) {
+        if (value) {
+            return $$.formatDate(new Date(value * 1000), 'yyyy-MM-dd hh:mm:ss');
+        }
+    }
+
+    function resetNextFireTime() {
+        $$.request('action', {
+
+        })
+    }
+
+    $(function () {
+        $$.transform('.page', operateType, {
+            'create': [],
+            'update': ['create']
+        });
+
+        $('#trigger_type').on('change', function (event) {
+            var value = $(this).val();
+            $('#ff').find('[class^=trigger_]').hide().filter('.trigger_' + value).show();
+        }).trigger('change');
+
+        $$.request('/action/bm/job-detail/search', {}, function (data) {
+            $('#job_name').combobox('loadData', data.rows);
+        });
+
+        if (operateType != 'create') {
+            if (query.trigger_name) {
+                $$.loadForm('#ff', '/action/bm/job-trigger/view', query);
+            }
+        }
+    });
+</script>
+</body>
+
+</html>

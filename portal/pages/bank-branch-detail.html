@@ -1,0 +1,141 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>机构</title>
+    <link href="../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="../lib/toastr/toastr.min.css" rel="stylesheet">
+    <link href="../lib/jquery-easyui/themes/bootstrap/easyui.min.css" rel="stylesheet">
+    <style type="text/css">
+        input[disabled],
+        select[disabled],
+        textarea[disabled] {
+            background-color: #ebebe4;
+        }
+    </style>
+</head>
+
+<body>
+<div class="page">
+    <form id="ff" action="/action/bm/bank-branch/view" data-options="onSerialize:onSerializeForm,load:onLoadForm">
+        <table class="table" style="width: 970px;">
+            <caption>银行支行信息</caption>
+            <tr class="tf tf-create tf-update">
+                <td class="text-right col-sm-2">
+                    <label>银行名称</label>
+                    <span style="color: red;">*</span></td>
+                <td class="col-sm-4">
+                    <div class="col-sm-12" style="padding:0;">
+                        <input type="text" id="account_bank" name="bank_cd" class="easyui-combobox"
+                               data-options="required:true,valueField:'bank_cd',textField:'bank_nm'">
+                    </div>
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>支行联行号</label>
+                    <span style="color: red;">*</span></td>
+                <td class="col-sm-4">
+                    <input type="text" name="bank_branch_cd" class="easyui-validatebox" data-options="required:true">
+                </td>
+            </tr>
+            <tr class="tf tf-create tf-update">
+                <td class="text-right col-sm-2">
+                    <label>支行名称</label>
+                    <span style="color: red;">*</span></td>
+                <td class="col-sm-4">
+                    <input type="text" name="bank_branch_nm" class="easyui-validatebox" data-options="required:true">
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>支行接收行行号</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="settle_bank_cd" class="easyui-validatebox" data-options="">
+                </td>
+            </tr>
+            <tr class="tf">
+                <td class="text-right col-sm-2">
+                    <label>创建人</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="created_by">
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>创建时间</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="created_time">
+                </td>
+            </tr>
+        </table>
+        <div style="display:block; height:50px;"></div>
+        <div style="position:fixed; left: 0px; bottom:0px; z-index:8999; height:42px; background-color: #f2f2f2; width: 1000px; padding: 5px 10px;">
+            <div class="row">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-8">
+                    <button type="button" class="btn btn-primary tf tf-create"
+                            data-options="datagrid:'#dg',url:'/action/bm/bank-branch/create'" onclick="$$.submit(this)">
+                        新增提交
+                    </button>
+                    <button type="button" class="btn btn-primary tf tf-update"
+                            data-options="datagrid:'#dg',url:'/action/bm/bank-branch/update'" onclick="$$.submit(this)">
+                        编辑提交
+                    </button>
+                    <button type="button" class="btn btn-default btn-outline" onclick="$$.close()">关闭</button>
+                </div>
+                <div class="col-sm-2">
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="../lib/jquery/jquery.min.js"></script>
+<script src="../lib/toastr/toastr.min.js"></script>
+<script src="../lib/My97DatePicker/WdatePicker.js"></script>
+<script src="../lib/jquery-easyui/jquery.easyui.min.js"></script>
+<script src="../js/base.js"></script>
+<script src="../js/st.js"></script>
+<script src="../js/param.js"></script>
+<script src="../js/district.js"></script>
+<script>
+    var query = $$.parseQueryString();
+    var displayType = query.displayType;
+    var operateType = query.operateType;
+
+    function onLoadForm(data) {
+
+    }
+
+    function onSerializeForm(data) {
+        if (query.operateType == 'update') {
+            data.rec_id = query.rec_id;
+        }
+    }
+
+    $(function () {
+        $$.transform('body>.page', operateType, {
+            'create': [],
+            'update': []
+        });
+
+        var d1 = $$.request('/action/bm/parameter/list', {
+            bank: '1'
+        }, function (data) {
+            $('#account_bank').combobox('loadData', data.bank);
+        });
+
+        $.when(d1).done(function () {
+            if (query.operateType == 'create') {
+                // $('#ff').form('load', query);
+                // $$.request('/action/bm/term-info/view', query, function(data) {
+                //     $('#ff').form('load', data.data);
+                // });
+            } else {
+                $$.loadForm('#ff', '/action/bm/bank-branch/view', query);
+            }
+        });
+    });
+</script>
+</body>
+
+</html>

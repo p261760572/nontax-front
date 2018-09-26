@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>触发记录</title>
+    <link href="../../lib/font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="../../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../lib/layer/theme/default/layer.css" rel="stylesheet">
+    <link href="../../lib/jquery-easyui/themes/bootstrap/easyui.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+<div class="page">
+    <form id="ff" class="" data-options="onSerialize:$.noop,onLoad:onLoadForm">
+        <table class="table" style="width: 970px;">
+            <caption>触发记录</caption>
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>ENTRY_ID</label>
+                    <span style="color: red;">*</span>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="entry_id" class="easyui-validatebox" data-options="required:true">
+
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>触发器名称</label>
+                    <span style="color: red;">*</span>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="trigger_name" class="easyui-validatebox" data-options="required:true">
+
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>触发器组</label>
+                    <span style="color: red;">*</span>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="trigger_group" class="easyui-validatebox" data-options="required:true">
+
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>触发时间</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="fired_time" class="easyui-validatebox" data-options="">
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>调度时间</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="sched_time" class="easyui-validatebox" data-options="">
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>优先级</label>
+                    <span style="color: red;">*</span>
+                </td>
+                <td class="col-sm-4">
+                    <select id="priority" name="priority" class="easyui-validatebox" data-options="required:true">
+                        <option value="">--请选择--</option>
+                        <option value="1">低</option>
+                        <option value="2">中</option>
+                        <option value="3">高</option>
+                    </select>
+
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>状态</label>
+                    <span style="color: red;">*</span>
+                </td>
+                <td class="col-sm-4">
+                    <!--<input type="text" name="state" class="easyui-validatebox" data-options="required:true">-->
+                    <select name="state" class="easyui-validatebox" data-options="required:true">
+                        <option value="">--请选择--</option>
+                        <option value="WAITING">等待中</option>
+                        <option value="EXECUTING">处理中</option>
+                        <option value="BLOCKED">阻塞中</option>
+                        <option value="COMPLETE">已完成</option>
+                        <option value="ERROR">失败</option>
+                    </select>
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>任务ID</label>
+                    <span style="color: red;">*</span>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="job_name" class="easyui-validatebox" data-options="required:true">
+
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>触发器handler</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="trigger_handler" class="easyui-validatebox" data-options="">
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>任务参数</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="job_param" class="easyui-validatebox" data-options="">
+                </td>
+            </tr>
+            <!--<tfoot class="">-->
+            <!--<tr>-->
+                <!--<td></td>-->
+                <!--<td colspan="3">-->
+                    <!--<button type="button" class="btn btn-primary"-->
+                            <!--data-options="datagrid:'#dg',url:'/action/bm/job-fired-trigger-module/search'"-->
+                            <!--onclick="$$.search(this)">查询-->
+                    <!--</button>-->
+                    <!--<button type="button" class="btn btn-default btn-outline" onclick="$$.reset(this)">重置</button>-->
+                <!--</td>-->
+            <!--</tr>-->
+            <!--</tfoot>-->
+        </table>
+    </form>
+    <form id="ff2" class="hide">
+        <input type="text" name="entry_id" class="easyui-validatebox" data-options="required:true">
+        <button type="button" class="btn btn-primary"
+                data-options="datagrid:'#dg',url:'/action/bm/job-fired-trigger-module/search'"
+                onclick="$$.search(this)">查询
+        </button>
+    </form>
+    <div id="tb">
+        <a href="#" class="easyui-linkbutton" data-toggle="logging"
+           data-options="iconCls:'fa fa-bars',plain:true">日志</a>
+        <a href="#" class="easyui-linkbutton" data-options="iconCls:'fa fa-bars',plain:true"
+           onclick="restart()">重启模块</a>
+        <a href="#" class="easyui-linkbutton" data-options="iconCls:'fa fa-bars',plain:true"
+           onclick="skip_restart()">忽略并重启</a>
+        <a href="#" class="easyui-linkbutton" data-toggle="edit" data-options="iconCls:'fa fa-bars',plain:true" onclick="executor_param()">编辑执行参数</a>
+        <a href="#" class="easyui-linkbutton" data-options="iconCls:'fa fa-bars',plain:true"
+           onclick="stop()">中止处理(kill)</a>
+        <a href="#" class="easyui-linkbutton" data-options="iconCls:'fa fa-bars',plain:true"
+           onclick="refresh()">刷新</a>
+    </div>
+    <table id="dg" class="easyui-datagrid" title="触发模块"
+           data-options="singleSelect:true,rownumbers:true,toolbar:'#tb',idField:'entry_module_id',nowrap:false">
+        <thead>
+        <tr>
+            <!-- <th data-options="field:'chk',checkbox:true"></th> -->
+            <th data-options="field:'entry_module_id',width:50">ID</th>
+            <!--<th data-options="field:'entry_id',width:100">ENTRY_ID</th>-->
+            <th data-options="field:'job_module_name',width:120">任务模块ID</th>
+            <th data-options="field:'fired_time',width:150,formatter:formatDate">触发时间</th>
+            <th data-options="field:'sched_time',width:150,formatter:formatDate">调度时间</th>
+            <th data-options="field:'state',width:80,formatter:formatState">状态</th>
+            <!-- <th data-options="field:'order_no',width:100">执行顺序</th> -->
+            <!-- <th data-options="field:'executor_handler',width:100">执行器任务handler</th> -->
+            <th data-options="field:'executor_param',width:120">任务参数</th>
+            <!-- <th data-options="field:'executor_block_strategy',width:100">阻塞处理策略</th>
+            <th data-options="field:'executor_fail_strategy',width:100">失败处理策略</th> -->
+            <!-- <th data-options="field:'process_id',width:100">进程ID</th> -->
+            <th data-options="field:'handler_code',width:100">执行返回码</th>
+            <th data-options="field:'handler_msg',width:100">执行返回消息</th>
+            <th data-options="field:'next_job_modules',width:150">执行成功下步任务模块</th>
+        </tr>
+        </thead>
+    </table>
+    <br>
+    <div style="width: 1000px;">
+        <div class="row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-6">
+                <button type="button" class="btn btn-default btn-outline" onclick="$$.close()">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../../lib/jquery/jquery.min.js"></script>
+<script src="../../lib/layer/layer.js"></script>
+<script src="../../lib/My97DatePicker/WdatePicker.js"></script>
+<script src="../../lib/jquery-easyui/jquery.easyui.min.js"></script>
+<script src="../../js/base.js"></script>
+<script src="../../js/st.js"></script>
+<script src="../../js/param.js"></script>
+<script src="../../js/district.js"></script>
+<script>
+    var query = $$.parseQueryString();
+    var displayType = query.displayType;
+    var operateType = query.operateType;
+
+    function reload() {
+        $('#dg').datagrid('reload');
+    }
+
+    function onLoadForm(data) {
+        data.data.fired_time = formatDate(data.data.fired_time);
+        data.data.sched_time = formatDate(data.data.sched_time);
+        data.data.trigger_group = formatTriggerGroup(data.data.trigger_group);
+    }
+
+    function formatTriggerGroup(value) {
+        var rows = [{
+            'value': 'default',
+            'text': '默认组'
+        }];
+
+        return $$.formatField(rows, value);
+    }
+
+    function formatDate(value) {
+        if (value) {
+            return $$.formatDate(new Date(value * 1000), 'yyyy-MM-dd hh:mm:ss');
+        }
+    }
+
+    function formatState(value) {
+        var rows = [{
+            'value': 'WAITING',
+            'text': '等待中'
+        }, {
+            'value': 'ACQUIRED',
+            'text': '调度中'
+        }, {
+            'value': 'EXECUTING',
+            'text': '处理中'
+        }, {
+            'value': 'BLOCKED',
+            'text': '阻塞中'
+        }, {
+            'value': 'COMPLETE',
+            'text': '已完成'
+        }, {
+            'value': 'ERROR',
+            'text': '失败'
+        }];
+
+        return $$.formatField(rows, value);
+    }
+
+    function restart() {
+        var row = $('#dg').datagrid('getSelected');
+        if (row === null) {
+            $$.msg('请选择记录！');
+            return false;
+        } else if ($.inArray(row.state, ['ERROR', 'COMPLETE']) < 0) {
+            $$.msg('当前状态不能重启');
+            return false;
+        } else {
+            $$.confirm('确认要重启？', function () {
+                $$.request('/action/bm/job-fired-trigger-module/restart', {
+                    entry_module_id: row.entry_module_id
+                }, function () {
+                    reload();
+                    $$.msg('操作成功');
+                });
+            });
+        }
+    }
+
+	function skip_restart() {
+        var row = $('#dg').datagrid('getSelected');
+        if (row === null) {
+            $$.msg('请选择记录！');
+            return false;
+        } else if ($.inArray(row.state, ['ERROR', 'COMPLETE']) < 0) {
+            $$.msg('当前状态不能重启');
+            return false;
+        } else {
+            $$.confirm('确认要重启？', function () {
+                $$.request('/action/bm/job-fired-trigger-module/skip_restart', {
+                    entry_module_id: row.entry_module_id
+                }, function () {
+                    reload();
+                    $$.msg('操作成功');
+                });
+            });
+        }
+    }
+	
+    function stop() {
+        var row = $('#dg').datagrid('getSelected');
+        if (row === null) {
+            $$.msg('请选择记录！');
+            return false;
+        } else if ($.inArray(row.state, ['EXECUTING']) < 0) {
+            $$.msg('当前状态不能中止处理');
+            return false;
+        } else {
+            $$.confirm('确认要中止处理(kill)？', function () {
+                $$.request('/action/bm/job-fired-trigger-module/stop', {
+                    entry_module_id: row.entry_module_id
+                }, function () {
+                    reload();
+                    $$.msg('操作成功');
+                });
+            });
+        }
+    }
+	function executor_param(){
+		
+	}
+	
+    function refresh() {
+        $('#dg').datagrid('reload');
+    }
+
+    var toggleOptions = {
+        options: {
+            logging: {
+                url: 'job-logging.html',
+            },
+			edit: {
+				url: 'job-fired-trigger-module-detail.html'
+			}
+        },
+        params: {
+			
+		}
+    };
+
+    $(function () {
+        $$.transform('#ff', 'view');
+
+        $('form').on('keyup', function (event) {
+            if (event.keyCode == 13) {
+                $(this).find('button.btn-primary').click();
+            }
+        });
+
+        $('#tb a.easyui-linkbutton[data-toggle]').on('click', function (event) {
+            event.preventDefault();
+            $$.clickToolbar(this, toggleOptions);
+        });
+
+
+        $('#ff2').form('load', query);
+        $('#ff2').find('button.btn-primary').click();
+        $$.loadForm('#ff', '/action/bm/job-fired-trigger/view', query);
+    });
+</script>
+</body>
+
+</html>

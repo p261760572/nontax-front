@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>任务模块</title>
+    <link href="../../lib/font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="../../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="../../lib/layer/theme/default/layer.css" rel="stylesheet">
+    <link href="../../lib/jquery-easyui/themes/bootstrap/easyui.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+<div class="page">
+    <form id="ff" action="/action/bm/job-detail/view" data-options="onSerialize:$.noop,onLoad:$.noop">
+        <table class="table" style="width: 970px;">
+            <caption>任务</caption>
+            <tbody>
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>任务ID</label>
+                    <span style="color: red;">*</span>
+                </td>
+                <td class="col-sm-4 tf-create">
+                    <input type="text" name="job_name" class="easyui-validatebox" data-options="required:true">
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>描述</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="description" class="easyui-validatebox" data-options="">
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>作者</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="author" class="easyui-validatebox" data-options="">
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>报警邮件</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="alarm_email" class="easyui-validatebox" data-options="">
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>报警手机号</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="alarm_mobile" class="easyui-validatebox" data-options="">
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>任务类型</label>
+                    <span style="color: red;">*</span>
+                </td>
+                <td class="col-sm-4">
+                    <select id="job_type" name="job_type" class="easyui-validatebox" data-options="required:true">
+                        <option value="">--请选择--</option>
+                        <option value="STATEFUL">有状态</option>
+                        <option value="UNSTATEFUL">无状态</option>
+                    </select>
+                </td>
+            </tr>
+            <tr class="tf tf-update">
+                <td class="text-right col-sm-2">
+                    <label>任务状态</label>
+                    <span style="color: red;">*</span>
+                </td>
+                <td class="col-sm-4">
+                    <select id="job_state" name="job_state" class="easyui-validatebox" data-options="required:true"
+                            disabled>
+                        <option value="">--请选择--</option>
+                        <option value="WAITING">等待中</option>
+                        <option value="BLOCKED">阻塞中</option>
+                    </select>
+                </td>
+                <td>&nbsp;
+                </td>
+                <td>&nbsp;
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+    <div id="tb">
+        <a href="#" class="easyui-linkbutton" data-toggle="add" data-options="iconCls:'fa fa-plus-circle',plain:true">新增</a>
+        <a href="#" class="easyui-linkbutton" data-toggle="edit"
+           data-options="iconCls:'fa fa-bars',plain:true">编辑</a>
+    </div>
+    <table id="dg" class="easyui-datagrid" title="任务模块"
+           data-options="singleSelect:true,pagination:false,rownumbers:true,toolbar:'#tb',idField:'job_module_name'">
+        <thead>
+        <tr>
+            <!-- <th data-options="field:'chk',checkbox:true"></th> -->
+            <th data-options="field:'job_module_name',width:200">任务模块ID</th>
+            <!-- <th data-options="field:'job_name',width:100">任务ID</th> -->
+            <th data-options="field:'description',width:200">描述</th>
+            <th data-options="field:'executor_handler',width:300">执行器任务handler</th>
+            <th data-options="field:'executor_param',width:150">执行器任务参数</th>
+            <!-- <th data-options="field:'executor_block_strategy',width:100">阻塞处理策略</th>
+            <th data-options="field:'executor_fail_strategy',width:100">失败处理策略</th> -->
+            <th data-options="field:'next_job_modules',width:150">执行成功下步模块</th>
+        </tr>
+        </thead>
+    </table>
+    <br>
+    <div style="width: 1000px;">
+        <div class="row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-6">
+                <button type="button" class="btn btn-default btn-outline" onclick="$$.close()">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../../lib/jquery/jquery.min.js"></script>
+<script src="../../lib/layer/layer.js"></script>
+<script src="../../lib/My97DatePicker/WdatePicker.js"></script>
+<script src="../../lib/jquery-easyui/jquery.easyui.min.js"></script>
+<script src="../../js/base.js"></script>
+<script src="../../js/st.js"></script>
+<script src="../../js/param.js"></script>
+<script src="../../js/district.js"></script>
+<script>
+    var query = $$.parseQueryString();
+    var displayType = query.displayType;
+    var operateType = query.operateType;
+
+    function reload() {
+        $('#dg').datagrid('reload');
+    }
+
+    var toggleOptions = {
+        url: 'job-module-detail-detail.html',
+        options: {
+            add: {
+                selected: false,
+            }
+        },
+        params: {
+            add: {
+                operateType: 'create',
+                job_name: query.job_name
+            },
+            edit: {
+                operateType: 'update'
+            }
+        }
+    };
+
+
+    $(function () {
+        $$.transform('#ff', 'view');
+
+        $('#tb a.easyui-linkbutton').on('click', function (event) {
+            event.preventDefault();
+            $$.clickToolbar(this, toggleOptions);
+        });
+
+        if (query.job_name) {
+            $$.loadForm('#ff', '/action/bm/job-detail/view', query);
+
+            var index = layer.load();
+            $('#dg').datagrid({
+                url: $$.wrapUrl('/action/bm/job-module-detail/search'),
+                queryParams: query,
+                loadMsg: null,
+                onLoadSuccess: function (data) {
+                    layer.close(index);
+                    $('#dg').datagrid('clearChecked');
+                    //解决滚动条引起的panel宽度问题
+                    $('#dg').datagrid('getPanel').panel('resize');
+                },
+                onLoadError: function () {
+                    layer.close(index);
+                }
+            });
+        }
+    });
+</script>
+</body>
+
+</html>

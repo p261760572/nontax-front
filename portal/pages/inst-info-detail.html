@@ -1,0 +1,199 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>机构</title>
+    <link href="../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="../lib/toastr/toastr.min.css" rel="stylesheet">
+    <link href="../lib/jquery-easyui/themes/bootstrap/easyui.min.css" rel="stylesheet">
+    <style type="text/css">
+        input[disabled],
+        select[disabled],
+        textarea[disabled] {
+            background-color: #ebebe4;
+        }
+    </style>
+</head>
+
+<body>
+<div class="page">
+    <form id="ff" action="/action/bm/inst-info/view" data-options="onSerialize:onSerializeForm,load:onLoadForm">
+        <table class="table" style="width: 970px;">
+            <caption>机构</caption>
+            <tr class="tf tf-create tf-update">
+                <td class="text-right col-sm-2">
+                    <label>机构ID</label>
+                    <span style="color: red;">*</span></td>
+                <td class="col-sm-4">
+                    <input type="text" name="inst_id" class="easyui-validatebox" data-options="" readonly>
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>机构名称</label>
+                    <span style="color: red;">*</span></td>
+                <td class="col-sm-4">
+                    <input type="text" name="inst_name" class="easyui-validatebox" data-options="required:true">
+                </td>
+            </tr>
+            <tr class="tf">
+                <td class="text-right col-sm-2">
+                    <label>创建人</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="created_by">
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>创建时间</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="created_time">
+                </td>
+            </tr>
+            <tr class="tf">
+                <td class="text-right col-sm-2">
+                    <label>最后修改人</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="last_modified_by">
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>最后修改时间</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="last_modified_time">
+                </td>
+            </tr>
+        </table>
+        <div style="display:block; height:50px;"></div>
+        <div style="position:fixed; left: 0px; bottom:0px; z-index:8999; height:42px; background-color: #f2f2f2; width: 1000px; padding: 5px 10px;">
+            <div class="row">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-8">
+                    <button type="button" class="btn btn-primary tf tf-create"
+                            data-options="datagrid:'#dg',url:'/action/bm/inst-info/create'" onclick="$$.submit(this)">
+                        新增提交
+                    </button>
+                    <button type="button" class="btn btn-primary tf tf-update"
+                            data-options="datagrid:'#dg',url:'/action/bm/inst-info/update'" onclick="$$.submit(this)">
+                        编辑提交
+                    </button>
+                    <button type="button" class="btn btn-default btn-outline" onclick="$$.close()">关闭</button>
+                </div>
+                <div class="col-sm-2">
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="../lib/jquery/jquery.min.js"></script>
+<script src="../lib/toastr/toastr.min.js"></script>
+<script src="../lib/My97DatePicker/WdatePicker.js"></script>
+<script src="../lib/jquery-easyui/jquery.easyui.min.js"></script>
+<script src="../js/base.js"></script>
+<script src="../js/st.js"></script>
+<script src="../js/param.js"></script>
+<script src="../js/district.js"></script>
+<script>
+    var query = $$.parseQueryString();
+    var displayType = query.displayType;
+    var operateType = query.operateType;
+
+    function onLoadForm(data) {
+        $('#mchnt_param_id').combobox('reload', {
+            mchnt_param_id: data.data.mchnt_param_id
+        });
+    }
+
+    function onSerializeForm(data) {
+
+    }
+
+    function mchntParamLoader(param, success, error) {
+        var q = param.q || '';
+
+        if (!query.term_no && !param.mchnt_param_id) return false;
+        // 
+        var queryParams;
+        if (param.mchnt_param_id) {
+            queryParams = {
+                mchnt_param_id: param.mchnt_param_id
+            };
+        } else {
+            queryParams = {
+                q: q,
+                term_no2: query.term_no
+            };
+        }
+
+        $$.request('/action/bm/mchnt-param/search', queryParams, function (result) {
+            for (var i = 0; i < result.rows.length; i++) {
+                result.rows[i]['text'] = formatMchntParam(result.rows[i]);
+            }
+            success(result.rows);
+        }, function () {
+            error.apply(this, arguments);
+        }, {
+            loading: false
+        });
+
+        $('#mchnt_param_id').combobox('options').queryParams['mchnt_param_id'] = undefined;
+    }
+
+    function formatMchntParam(row) {
+        return row.busi_type_nm + '/' + row.mchnt_name + '/' + (row.mchnt_cd || '');
+    }
+
+    function hasNext(oper_in, proc_st, action) {
+        var rows = $$.st.transition[$$.st.alias['term_param']]
+        return $$.hasNextStatus(rows, oper_in, proc_st, action);
+    }
+
+    $(function () {
+        $$.transform('body>.page', operateType, {
+            'create': [],
+            'update': []
+        });
+
+        if ($.inArray(operateType, ['create']) >= 0) {
+            $('#login_pwd').validatebox({
+                required: true
+            });
+        }
+
+
+        // $('#province').on('change', onChangeProvince);
+        // $('#city').on('change', onChangeCity);
+        // $$.loadSelect('#province', districtData['province']);
+
+        // $$.loadSelect('#term_status', $$.param['term_status']);
+        // $$.loadSelect('#oper_in', $$.st.operIn[$$.st.alias['term_param']]);
+        // $$.loadSelect('#proc_st', $$.st.procSt[$$.st.alias['term_param']]);
+
+
+        var d1 = $$.request('/action/bm/inst-info/list', {}, function (data) {
+            $('#inst_id').combotree('loadData', $$.generateTreeData(data.rows, {
+                id: 'inst_id',
+                pid: 'inst_pid',
+                text: 'inst_name'
+            }));
+        });
+
+
+        $.when(d1).done(function () {
+            if (query.operateType == 'create') {
+                // $('#ff').form('load', query);
+                // $$.request('/action/bm/term-info/view', query, function(data) {
+                //     $('#ff').form('load', data.data);
+                // });
+            } else {
+                $$.loadForm('#ff', '/action/bm/inst-info/view', query);
+            }
+        });
+
+
+    });
+</script>
+</body>
+
+</html>

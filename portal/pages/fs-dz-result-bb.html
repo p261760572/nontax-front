@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>对账报表</title>
+    <link href="../lib/font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="../lib/toastr/toastr.min.css" rel="stylesheet">
+    <link href="../lib/jquery-easyui/themes/bootstrap/easyui.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+<div class="page">
+    <form id="ff" data-options="onSerialize:serializeSearch">
+        <table class="table" style="width: 970px;">
+            <caption>查询条件</caption>
+            <tbody>
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>报表类型</label></td>
+                <td class="col-sm-4">
+                    <select id="mchttype" name="mchttype" class="easyui-validatebox" data-options="">
+                        <option value="" selected="selected">终端交易报表</option>
+                        <option value="0">商户日交易表</option>
+                    </select>
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>交易渠道</label></td>
+                <td class="col-sm-4">
+                    <select id="trans_chnl" name="trans_chnl" class="easyui-validatebox" data-options="">
+                        <option value="" selected="selected">全部</option>
+                        <option value="0">互联网</option>
+                        <option value="1">POS</option>
+                        <option value="2">移动互联网</option>
+                        <option value="3">POS通</option>
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>交易类型</label></td>
+                <td class="col-sm-4">
+                    <select id="trans_type" name="trans_type" class="easyui-validatebox" data-options=""
+                            style="width: 150px;">
+                        <option value="" selected="selected">全部</option>
+                        <option value="0001">支付</option>
+                        <option value="0002">退付</option>
+                    </select>
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>所在地区</label>
+                </td>
+                <td class="col-sm-4">
+                    <select id="citycode" name="citycode" class="easyui-validatebox" data-options=""
+                            style="width: 150px;">
+                        <option value="" selected="selected">全部</option>
+                    </select>
+                    <select id="areacode" name="areacode" class="easyui-validatebox" data-options=""
+                            style="width: 150px;">
+                        <option value="" selected="selected">全部</option>
+                    </select>
+                </td>
+            </tr>
+
+            <tr class="tf tf-create tf-update">
+                <td class="text-right col-sm-2">
+                    <label>开始日期</label>
+                    <span style="color: red;">*</span>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="settle_date" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyyMMdd'})"
+                           data-options="required:true">
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>截止日期</label>
+                    <span style="color: red;">*</span>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="settle_date2" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyyMMdd'})"
+                           data-options="required:true">
+                </td>
+            </tr>
+
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>商户号</label></td>
+                <td colspan="3" class="col-sm-4">
+                    <input type="text" name="mchtid" class="easyui-validatebox" data-options="">
+                    <span> (多个商户号用英文逗号隔开,连续商户号可使用-符号)</sapn>
+                </td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr>
+                <td></td>
+                <td colspan="3">
+                    <!--button type="button" class="btn btn-primary" data-options="datagrid:'#dg',url:'/action/bm/mchnt-base-info/search'" onclick="$$.search(this)">查询</button-->
+                    <button type="button" class="btn btn-success"
+                            data-options="datagrid:'#dg',url:'/action/bm/mchnt-base-info/export'"
+                            onclick="$$.exportData(this)">导出Excel
+                    </button>
+                    <button type="button" class="btn btn-default btn-outline" onclick="$$.reset(this)">清空</button>
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+    </form>
+</div>
+
+<script src="../lib/jquery/jquery.min.js"></script>
+<script src="../lib/toastr/toastr.min.js"></script>
+<script src="../lib/My97DatePicker/WdatePicker.js"></script>
+<script src="../lib/jquery-easyui/jquery.easyui.min.js"></script>
+<script src="../js/base.js"></script>
+<script src="../js/st.js"></script>
+<script src="../js/param.js"></script>
+<script src="../js/district.js"></script>
+<script>
+    var query = $$.parseQueryString();
+    var displayType = query.displayType;
+    var operateType = query.operateType;
+
+    var params = {
+        mchttype: [{
+            value: "0",
+            text: "互联网"
+        }, {
+            value: "1",
+            text: "POS"
+        }, {
+            value: "2",
+            text: "移动互联网"
+        }, {
+            value: "3",
+            text: "POS通"
+        }
+        ],
+        review_status: [{
+            value: "0",
+            text: "未提交"
+        }, {
+            value: "2",
+            text: "审核通过"
+        }, {
+            value: "3",
+            text: "退回"
+        }
+        ],
+        flag: [{
+            value: "1",
+            text: "2.0版本"
+        }, {
+            value: "2",
+            text: "1.0版本"
+        }
+        ],
+        mchtstate: [{
+            value: "1",
+            text: "启用"
+        }, {
+            value: "2",
+            text: "关闭"
+        }
+        ]
+    }
+
+    function serializeSearch(data) {
+
+    }
+
+    function onClickRow(rowIndex, rowData) {
+
+    }
+
+    function onChangeCity() {
+        var value = $(this).val();
+        $$.request('/action/bm/parameter/list', {
+            city: value,
+            district: '1'
+        }, function (data) {
+            $$.loadSelect('#areacode', data.district);
+        });
+    }
+
+    function onChangeDistrict() {
+        var value = $(this).val();
+        $('#fscode').val(value);
+    }
+
+    function formatMchtType(value) {
+        return $$.formatField(params['mchttype'], value);
+    }
+
+    function formatReview(value) {
+        return $$.formatField(params['review_status'], value);
+    }
+
+    function formatFlag(value) {
+        return $$.formatField(params['flag'], value);
+    }
+
+    function formatMchtState(value) {
+        return $$.formatField(params['mchtstate'], value);
+    }
+
+    function formatOp(value, row) {
+        return '<a href="fs-dz-result-detail.html" class="btn btn-white btn-sm" data-toggle="view"><i class="fa fa-folder"></i> 查看 </a>';
+    }
+
+    $(function () {
+
+        $('#citycode').on('change', onChangeCity);
+
+        $('#areacode').on('change', onChangeDistrict);
+
+        $$.request('/action/bm/parameter/list', {
+            bank: '1',
+            city: '1',
+            fee: '1'
+        }, function (data) {
+            $$.loadSelect('#citycode', data.city);
+            $$.loadSelect('#feeid', data.fee);
+            $('#account_bank').combobox('loadData', data.bank);
+        });
+
+    });
+</script>
+</body>
+
+</html>

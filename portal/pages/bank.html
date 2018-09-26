@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>结算银行</title>
+    <link rel="stylesheet" href="../lib/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="../lib/layer/theme/default/layer.css">
+    <link rel="stylesheet" href="../lib/jquery-easyui/themes/bootstrap/easyui.css">
+    <link rel="stylesheet" href="../css/base.css">
+</head>
+
+<body>
+<div class="page">
+    <form id="ff" data-options="onSerialize:onSerializeForm,onLoad:onLoadForm">
+        <table class="table" style="width: 970px;">
+            <caption>查询结算银行</caption>
+            <tbody>
+            
+            <tr>
+                <td class="col-sm-2 text-right">
+                    <label>结算银行代码</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="bankcode" class="easyui-validatebox" data-options="validType:'maxLength[10]'">
+                </td>
+            
+                <td class="col-sm-2 text-right">
+                    <label>银行名称</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="bankname" class="easyui-validatebox" data-options="validType:'maxLength[250]'">
+                </td>
+            </tr>
+            
+            
+            </tbody>
+            <tfoot>
+            <tr>
+                <td></td>
+                <td colspan="3">
+                    <button type="button" class="btn btn-primary"
+                            data-options="datagrid:'#dg',url:'/action/bm/bank/search'" onclick="$$.search(this)">查询
+                    </button>
+                    <button type="button" class="btn btn-default" onclick="$$.reset(this)">重置</button>
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+    </form>
+    <!--<div id="tb">-->
+        <!--<a href="javascript:void(0)" class="easyui-linkbutton" data-toggle="add" data-options="plain:true,iconCls:'fa fa-plus-circle',onBefore:$$.noop">新增</a>-->
+        <!--<a href="javascript:void(0)" class="easyui-linkbutton" data-toggle="view" data-options="plain:true,iconCls:'fa fa-eye',onBefore:$$.noop">详情</a>-->
+        <!--<a href="javascript:void(0)" class="easyui-linkbutton" data-toggle="edit" data-options="plain:true,iconCls:'fa fa-pencil-square',onBefore:$$.noop">新增</a>-->
+        <!--<a href="javascript:void(0)" class="easyui-linkbutton" onclick="$$.batchSubmit(this)" data-options="plain:true,iconCls:'fa fa-trash',onBefore:$$.noop,msg:'删除',url:'/action/bm/bank/batch-delete'">新增</a>-->
+        <!--<a href="javascript:void(0)" class="easyui-linkbutton" data-toggle="module" data-options="plain:true,iconCls:'fa fa-cog',onBefore:$$.noop">模块</a>-->
+    <!--</div>-->
+    <table id="dg" class="easyui-datagrid" title="查询结算银行"
+           data-options="singleSelect:true,pagination:true,rownumbers:true,collapsible:true,idField:'bankcode'">
+        <thead>
+        <tr>
+            <!--<th data-options="field:'chk',checkbox:true"></th>-->
+            <th data-options="field:'bankcode',width:100">结算银行代码</th>
+            <th data-options="field:'bankname',width:200">银行名称</th>
+        </tr>
+        </thead>
+    </table>
+</div>
+<script src="../lib/jquery/jquery.min.js"></script>
+<script src="../lib/layer/layer.js"></script>
+<script src="../lib/jquery-easyui/jquery.easyui.min.js"></script>
+<script src="../lib/My97DatePicker/WdatePicker.js"></script>
+<script src="../js/base.js"></script>
+<script>
+    var query = $$.parseQueryString();
+    var displayType = query.displayType;
+    var operateType = query.operateType;
+
+    function onSerializeForm(data) {
+    }
+
+    function onLoadForm(data) {
+    }
+
+    function reload() {
+        $('#dg').datagrid('reload');
+    }
+
+    var toggleOptions = {
+        url: 'bank-detail.html',
+        options: {
+            add: {
+                selected: false,
+            },
+            module: {
+                url: 'bank.html',
+            }
+        },
+        params: {
+            add: {
+                operateType: 'create'
+            },
+            view: {
+                operateType: 'view'
+            },
+            edit: {
+                operateType: 'update'
+            }
+        }
+    };
+
+    $(function () {
+        $('form').on('keyup', function (event) {
+            if (event.keyCode == 13) {
+                $(this).find('button.btn-primary').click();
+            }
+        });
+
+        $('#tb button.btn[data-toggle]').on('click', function (event) {
+            event.preventDefault();
+            $$.clickToolbar(this, toggleOptions);
+        });
+
+        $('#ff').find('button.btn-primary').click();
+    });
+</script>
+</body>
+
+</html>

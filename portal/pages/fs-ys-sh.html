@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>疑似非税商户</title>
+    <link href="../lib/font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="../lib/layer/theme/default/layer.css" rel="stylesheet">
+    <link href="../lib/jquery-easyui/themes/bootstrap/easyui.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+<div class="page">
+    <form id="ff" data-options="onSerialize:$.noop">
+        <table class="table" style="width: 970px;">
+            <caption>查询疑似非税商户</caption>
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>商户号：</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="mchtid">
+                </td>
+
+                <td class="text-right col-sm-2">
+
+                </td>
+                <td class="col-sm-4">
+
+                </td>
+            </tr>
+
+            <tfoot>
+            <tr>
+                <td></td>
+                <td colspan="3">
+                    <button type="button" class="btn btn-primary" onclick="$$.search(this)"
+                            data-options="datagrid:'#dg',url:'/action/bm/fs-ys-sh/search'">
+                        查询
+                    </button>
+                    <button type="button" class="btn btn-default btn-outline" onclick="$$.reset(this)">重置</button>
+                    <button type="button" class="btn btn-success" onclick="$$.exportData(this)"
+                            data-options="datagrid:'#dg',url:'/action/bm/fs-ys-sh/export'">
+                        导出
+                    </button>
+                    <a href="fs-n-backlist.html" class="pull-right" style="font-size: 1.2em;">黑名单管理</a>
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+    </form>
+    <div id="tb">
+        <a href="#" class="easyui-linkbutton" onclick="addBlacklist(this)"
+           data-options="iconCls:'fa fa-plus-circle',plain:true">加入黑名单</a>
+    </div>
+    <table id="dg" class="easyui-datagrid" title="疑似非税商户"
+           data-options="singleSelect:true,pagination:true,rownumbers:true,toolbar:'#tb',idField:'rec_id'">
+        <thead>
+        <tr>
+            <th data-options="field:'chk',checkbox:true"></th>
+            <th data-options="field:'shh',width:150">商户号</th>
+            <th data-options="field:'shmc',width:300">商户名称</th>
+        </tr>
+        </thead>
+    </table>
+</div>
+<script src="../lib/jquery/jquery.min.js"></script>
+<script src="../lib/layer/layer.js"></script>
+<script src="../lib/My97DatePicker/WdatePicker.js"></script>
+<script src="../lib/jquery-easyui/jquery.easyui.min.js"></script>
+<script src="../js/base.js"></script>
+<script src="../js/st.js"></script>
+<script src="../js/param.js"></script>
+<script src="../js/district.js"></script>
+<script>
+    var query = $$.parseQueryString();
+    var displayType = query.displayType;
+    var operateType = query.operateType;
+
+    function reload() {
+        $('#dg').datagrid('reload');
+    }
+
+    function addBlacklist() {
+        var $dg = $('#dg');
+        var dgOpts = $dg.datagrid('options');
+        var rows = $dg.datagrid('getChecked');
+
+        var opts = {
+            msg: '加入黑名单'
+        };
+
+        if (rows.length) {
+            for (var i = 0; i < rows.length; i++) {
+                rows[i].mchtid = rows[i].shh;
+            }
+            $$.confirm('确认要将选中的记录' + opts.msg + '？', function () {
+                $$.request('/action/bm/fs-n-backlist/batch-create', {
+                    rows: rows
+                }, function (result) {
+                    $$.msg('操作成功');
+                    $dg.datagrid('reload');
+                });
+            });
+        } else {
+            $$.msg('请勾选记录！');
+            return false;
+        }
+    }
+
+    $(function () {
+        $('form').on('keyup', function (event) {
+            if (event.keyCode == 13) {
+                $(this).find('button.btn-primary').click();
+            }
+        });
+
+        $('#ff').find('button.btn-primary').click();
+    });
+</script>
+</body>
+
+</html>

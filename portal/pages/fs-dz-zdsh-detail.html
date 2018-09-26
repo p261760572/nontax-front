@@ -1,0 +1,169 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>处理批次</title>
+    <link href="../lib/font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="../lib/layer/theme/default/layer.css" rel="stylesheet">
+    <link href="../lib/jquery-easyui/themes/bootstrap/easyui.min.css" rel="stylesheet">
+</head>
+
+<body>
+<div class="page">
+    <form id="ff" action="/action/bm/fs-dz-zdsh/view" data-options="onSerialize:$.noop,onLoad:onLoadForm">
+        <table class="table" style="width: 970px;">
+            <caption>处理批次</caption>
+            <tbody>
+            <tr>
+                <td class="text-right col-sm-2 tf tf-update">
+                    <label>批次号<span style="color: red;">*</span></label>
+                </td>
+                <td class="col-sm-4  tf tf-update">
+                    <input type="text" name="batch_no" class="easyui-validatebox" data-options="required:true" readonly>
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>处理类型<span style="color: red;">*</span></label>
+                </td>
+                <td class="col-sm-4 tf tf-create">
+                    <select name="process_mode" class="easyui-validatebox" data-options="required:true">
+                        <option value="">--请选择--</option>
+                        <option value="ON">线上</option>
+                        <option value="OFF">线下</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>开始日期</label>
+                    <span style="color: red;">*</span>
+                </td>
+                <td class="col-sm-4">
+                    <input id="start_date" type="text" class="easyui-validatebox Wdate" name="start_date"
+                           style="width: 120px;"
+                           onfocus="WdatePicker({onpicked:function(){$dp.$('end_date').focus();},maxDate:'#F{$dp.$D(\'end_date\')}'})"
+                           data-options="required:true">
+                    <input id="end_date" type="text" class="easyui-validatebox Wdate" name="end_date"
+                           style="width: 120px;"
+                           onfocus="WdatePicker({minDate:'#F{$dp.$D(\'start_date\')}'})" data-options="required:true">
+                </td>
+
+                <td class="text-right col-sm-2">
+                    <label>备注</label>
+                    <span style="color: red;">*</span>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="remark" class="easyui-validatebox" data-options="required:true">
+                </td>
+            </tr>
+
+            <tr class="tf">
+                <td class="text-right col-sm-2">
+                    <label>记录编号</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="rec_id">
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>操作标志/处理状态</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="oper_in" style="width: 100px;">
+                    <input type="text" name="proc_st" style="width: 100px;">
+                    <!-- <select name="oper_in">
+                    </select>
+                    <select name="proc_st">
+                    </select> -->
+                </td>
+            </tr>
+            <tr class="tf">
+                <td class="text-right col-sm-2">
+                    <label>创建人</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="created_by">
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>创建时间</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="created_time">
+                </td>
+            </tr>
+            <tr class="tf">
+                <td class="text-right col-sm-2">
+                    <label>最后修改人</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="last_modified_by">
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>最后修改时间</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="last_modified_time">
+                </td>
+            </tr>
+
+            </tbody>
+        </table>
+        <div style="width: 1000px; padding: 5px 10px;">
+            <div class="row">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-8">
+                    <button type="button" class="btn btn-primary tf tf-create" onclick="$$.submit(this)"
+                            data-options="datagrid:'#dg',url:'/action/bm/fs-dz-zdsh/create'">
+                        新增提交
+                    </button>
+                    <button type="button" class="btn btn-primary tf tf-update" onclick="$$.submit(this)"
+                            data-options="datagrid:'#dg',url:'/action/bm/fs-dz-zdsh/update'">
+                        编辑提交
+                    </button>
+                    <button type="button" class="btn btn-default btn-outline" onclick="$$.close()">关闭</button>
+                </div>
+                <div class="col-sm-2">
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="../lib/jquery/jquery.min.js"></script>
+<script src="../lib/layer/layer.js"></script>
+<script src="../lib/My97DatePicker/WdatePicker.js"></script>
+<script src="../lib/jquery-easyui/jquery.easyui.min.js"></script>
+<script src="../js/base.js"></script>
+<script src="../js/st.js"></script>
+<script src="../js/param.js"></script>
+<script src="../js/district.js"></script>
+<script>
+    var query = $$.parseQueryString();
+    var displayType = query.displayType;
+    var operateType = query.operateType;
+
+    function onLoadForm(data) {
+        data.data.start_date = data.data.start_date.substr(0, 10);
+        data.data.end_date = data.data.end_date.substr(0, 10);
+    }
+
+    function onSerializeForm(data) {
+
+    }
+
+    $(function () {
+        $$.transform('.page', operateType, {
+            'create': [],
+            'update': ['create']
+        });
+
+        if (operateType != 'create') {
+            if (query.rec_id) {
+                $$.loadForm('#ff', '/action/bm/fs-dz-zdsh/view', query);
+            }
+        }
+    });
+</script>
+</body>
+
+</html>

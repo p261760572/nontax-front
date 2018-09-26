@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>任务</title>
+    <link href="../../lib/font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="../../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../lib/layer/theme/default/layer.css" rel="stylesheet">
+    <link href="../../lib/jquery-easyui/themes/bootstrap/easyui.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+<div class="page">
+    <form id="ff" data-options="onSerialize:$.noop">
+        <table class="table" style="width: 970px;">
+            <caption>查询任务</caption>
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>任务ID：</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="job_name">
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>描述：</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="description">
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>作者：</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="author">
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>任务状态：</label>
+                </td>
+                <td class="col-sm-4">
+                    <select id="job_state" name="job_state">
+                        <option value="">--请选择--</option>
+                        <option value="WAITING">等待中</option>
+                        <option value="BLOCKED">阻塞中</option>
+                        <option value="ERROR">失败</option>
+                    </select>
+                </td>
+            </tr>
+            <tfoot>
+            <tr>
+                <td></td>
+                <td colspan="3">
+                    <button type="button" class="btn btn-primary"
+                            data-options="datagrid:'#dg',url:'/action/bm/job-detail/search'" onclick="$$.search(this)">
+                        查询
+                    </button>
+                    <button type="button" class="btn btn-default btn-outline" onclick="$$.reset(this)">重置</button>
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+    </form>
+    <div id="tb">
+        <a href="#" class="easyui-linkbutton" data-toggle="add" data-options="iconCls:'fa fa-plus-circle',plain:true">新增</a>
+        <a href="#" class="easyui-linkbutton" data-toggle="edit"
+           data-options="iconCls:'fa fa-bars',plain:true">编辑</a>
+        <a href="#" class="easyui-linkbutton" data-toggle="module" data-options="iconCls:'fa fa-bars',plain:true">任务模块</a>
+    </div>
+    <table id="dg" class="easyui-datagrid" title="任务"
+           data-options="singleSelect:true,pagination:true,rownumbers:true,toolbar:'#tb',idField:'job_name'">
+        <thead>
+        <tr>
+            <!-- <th data-options="field:'chk',checkbox:true"></th> -->
+            <th data-options="field:'job_name',width:150">任务ID</th>
+            <th data-options="field:'description',width:200">描述</th>
+            <th data-options="field:'author',width:100">作者</th>
+            <th data-options="field:'alarm_email',width:100">报警邮件</th>
+            <th data-options="field:'alarm_mobile',width:100">报警手机号</th>
+            <th data-options="field:'job_state',width:100,formatter:formatJobState">任务状态</th>
+            <th data-options="field:'job_type',width:100,formatter:formatJobType">任务类型</th>
+        </tr>
+        </thead>
+    </table>
+</div>
+<script src="../../lib/jquery/jquery.min.js"></script>
+<script src="../../lib/layer/layer.js"></script>
+<script src="../../lib/My97DatePicker/WdatePicker.js"></script>
+<script src="../../lib/jquery-easyui/jquery.easyui.min.js"></script>
+<script src="../../js/base.js"></script>
+<script src="../../js/st.js"></script>
+<script src="../../js/param.js"></script>
+<script src="../../js/district.js"></script>
+<script>
+    var query = $$.parseQueryString();
+    var displayType = query.displayType;
+    var operateType = query.operateType;
+
+    function reload() {
+        $('#dg').datagrid('reload');
+    }
+
+    var toggleOptions = {
+        url: 'job-detail-detail.html',
+        options: {
+            add: {
+                selected: false,
+            },
+            module: {
+                url: 'job-module-detail.html',
+            }
+        },
+        params: {
+            add: {
+                operateType: 'create'
+            },
+            edit: {
+                operateType: 'update'
+            }
+        }
+    };
+
+    function formatJobState(value) {
+        var rows = [{
+            'value': 'WAITING',
+            'text': '等待中'
+        }, {
+            'value': 'BLOCKED',
+            'text': '阻塞中'
+        }, {
+            'value': 'ERROR',
+            'text': '失败'
+        }];
+
+        return $$.formatField(rows, value);
+    }
+
+    function formatJobType(value) {
+        var rows = [{
+            'value': 'STATEFUL',
+            'text': '有状态'
+        }, {
+            'value': 'UNSTATEFUL',
+            'text': '无状态'
+        }];
+
+        return $$.formatField(rows, value);
+    }
+
+    $(function () {
+        $('form').on('keyup', function (event) {
+            if (event.keyCode == 13) {
+                $(this).find('button.btn-primary').click();
+            }
+        });
+
+        $('#tb a.easyui-linkbutton').on('click', function (event) {
+            event.preventDefault();
+            $$.clickToolbar(this, toggleOptions);
+        });
+
+
+        $('#ff').find('button.btn-primary').click();
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,198 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>触发器组</title>
+    <link href="../../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="../../lib/layer/theme/default/layer.css">
+    <link href="../../lib/jquery-easyui/themes/bootstrap/easyui.min.css" rel="stylesheet">
+</head>
+
+<body>
+<div class="page">
+    <form action="/action/bm/job-trigger-group/view" data-options="onSerialize:$.noop,onLoad:$.noop">
+        <table class="table" style="width: 970px;">
+            <caption>触发器组</caption>
+            <tbody>
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>触发器组</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="trigger_group" class="easyui-validatebox" data-options="required:true">
+                    <span style="color: red;">*</span>
+                </td>
+
+                <td class="text-right col-sm-2">
+                    <label>触发器组名称</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="group_name" class="easyui-validatebox" data-options="required:true">
+                    <span style="color: red;">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>序号</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="order_no" class="easyui-validatebox" data-options="required:true">
+                    <span style="color: red;">*</span>
+                </td>
+                <td>&nbsp;
+
+                </td>
+                <td>&nbsp;
+
+                </td>
+            </tr>
+
+            <tr class="readonly invisible visible-view visible-check1">
+                <td class="text-right col-sm-2">
+                    <label>记录编号</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="rec_id">
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>操作标志/处理状态</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="oper_in" style="width: 100px;">
+                    <input type="text" name="proc_st" style="width: 100px;">
+                    <!-- <select name="oper_in">
+                    </select>
+                    <select name="proc_st">
+                    </select> -->
+                </td>
+            </tr>
+            <tr class="readonly readonly invisible visible-view visible-check1">
+                <td class="text-right col-sm-2">
+                    <label>创建人</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="created_by">
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>创建时间</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="created_time">
+                </td>
+            </tr>
+            <tr class="readonly invisible visible-view visible-check1">
+                <td class="text-right col-sm-2">
+                    <label>最后修改人</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="last_modified_by">
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>最后修改时间</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="last_modified_time">
+                </td>
+            </tr>
+            <tr class="readonly invisible visible-view visible-check1">
+                <td class="text-right col-sm-2">
+                    <label>最后审核人</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="last_checked_by">
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>最后审核时间</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="last_checked_time">
+                </td>
+            </tr>
+            <tr class="readonly invisible visible-view visible-check1">
+                <td class="text-right col-sm-2">
+                    <label>审核通过或不通过原因</label>
+                </td>
+                <td colspan="3" class="col-sm-10 editable-check1">
+                    <input type="text" name="checked_reason" class="easyui-validatebox" style="width:100%;"
+                           data-options="">
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div style="display:block; height:50px;"></div>
+        <div style="position:fixed; left: 0px; bottom:0px; z-index:999; height:42px; background-color: #f2f2f2; width: 1000px; padding: 5px 10px; ">
+            <div class="row">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-6">
+                    <button type="button" class="btn btn-primary"
+                            data-options="datagrid:'#dg',url:'/action/bm/job-trigger-group/create',success:$.noop"
+                            onclick="$$.search(this)">新增提交
+                    </button>
+                    <button type="button" class="btn btn-primary"
+                            data-options="datagrid:'#dg',url:'/action/bm/job-trigger-group/update',success:$.noop"
+                            onclick="$$.search(this)">编辑提交
+                    </button>
+                </div>
+                <div class="col-sm-4">
+                    <div class="pull-right">
+                        <button type="button" class="btn btn-default btn-outline" onclick="$$.close()">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="../../lib/jquery/jquery.min.js"></script>
+<script src="../../lib/layer/layer.js"></script>
+<script src="../../lib/My97DatePicker/WdatePicker.js"></script>
+<script src="../../lib/jquery-easyui/jquery.easyui.min.js"></script>
+<script src="../../js/base.js"></script>
+<script src="../../js/st.js"></script>
+<script src="../../js/param.js"></script>
+<script src="../../js/district.js"></script>
+<!-- <script src="../js/district.js"></script> -->
+<script>
+    var query = $$.parseQueryString();
+    var displayType = query.displayType;
+    var operateType = query.operateType;
+
+    function serializeSearch(data) {
+        var procStMap = {
+            'receipt': '1',
+            'refund': ['2', '6'],
+            'refund-confirm': '5',
+            'cancel': '1'
+        };
+        data.proc_st2 = procStMap[displayType];
+    }
+
+    function hasNext(oper_in, proc_st, action) {
+        var rows = $$.st.transition[$$.st.alias['job_trigger_group']]
+        return $$.hasNextStatus(rows, oper_in, proc_st, action);
+    }
+
+    function formatExpenseType(value) {
+        return $$.formatField($$.param['expense_type'], value);
+    }
+
+    function formatExpenseCycle(value) {
+        return $$.formatField($$.param['expense_cycle'], value);
+    }
+
+    function formatDate(value) {
+        return value ? value.substr(0, 10) : value;
+    }
+
+    $(function () {
+        $$.transformStatus('body>.page', operateType);
+
+        $('#expense_type').combobox('loadData', $$.param['expense_type']);
+        $('#expense_cycle').combobox('loadData', $$.param['expense_cycle']);
+        $('#proc_st').combobox('loadData', $$.st.procSt[$$.st.alias['job_trigger_group']]);
+    });
+</script>
+</body>
+
+</html>

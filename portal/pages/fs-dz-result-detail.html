@@ -1,0 +1,291 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>非税商户对账信息明细</title>
+    <link href="../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="../lib/toastr/toastr.min.css" rel="stylesheet">
+    <link href="../lib/jquery-easyui/themes/bootstrap/easyui.min.css" rel="stylesheet">
+    <link href="../lib/viewer/viewer.min.css" rel="stylesheet">
+    <style type="text/css">
+        input[disabled],
+        select[disabled],
+        textarea[disabled] {
+            background-color: rgb(235, 235, 228);
+        }
+
+        .tab-body-overflow {
+            overflow: hidden;
+        }
+
+        .page {
+            font-size: 14px;
+        }
+
+    </style>
+</head>
+
+<body>
+<div id="tt" class="easyui-tabs" data-options="fit:true,border:false,tabHeight:36,onSelect:onSelectTab"
+     style="overflow:hidden;">
+    <div class="page">
+        <form id="ff" action="/action/bm/mchnt-base-info/view" data-options="onSerialize:onSerializeForm,load:onLoadForm">
+            <table class="table" style="width: 970px;">
+                <caption>对账信息</caption>
+                <tr class="tf tf-create tf-update">
+                    <td class="text-right col-sm-2">
+                        <label>交易渠道</label></td>
+                    <td class="col-sm-4">
+                        <select id="trans_chnl" name="trans_chnl" class="easyui-validatebox">
+                            <option value="">==请选择==</option>
+                            <option value="0">互联网</option>
+                            <option value="1" selected="selected">POS</option>
+                            <option value="2">移动互联网</option>
+                            <option value="3">POS通</option>
+                        </select>
+                    </td>
+                    <td class="text-right col-sm-2">
+                        <label>交易类型</label></td>
+                    <td class="col-sm-4">
+                        <select id="trans_type" name="trans_type" class="easyui-validatebox">
+                            <option value="0001">支付</option>
+                            <option value="0002">退付</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr class="tf tf-create tf-update">
+                    <td class="text-right col-sm-2">
+                        <label>清算日期</label></td>
+                    <td class="col-sm-4">
+                        <input type="text" name="settledate" class="easyui-validatebox">
+                    </td>
+                    <td class="text-right col-sm-2">
+                        <label>交易时间</label></td>
+                    <td class="col-sm-4">
+                        <input type="text" name="transtime" class="easyui-validatebox">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="text-right col-sm-2">
+                        <label>商户名称</label></td>
+                    <td class="col-sm-4">
+                        <input type="text" name="mchtname" class="easyui-validatebox">
+                    </td>
+                    <td class="text-right col-sm-2">
+                        <label>手续费标准</label></td>
+                    <td class="col-sm-4">
+                        <select id="fee_type" name="fee_type" class="easyui-validatebox">
+                            <option value="">==请选择==</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr class="tf tf-create tf-update">
+                    <td class="text-right col-sm-2">
+                        <label>商户号</label></td>
+                    <td class="col-sm-4">
+                        <input type="text" name="mchtid" class="easyui-validatebox">
+                    </td>
+                    <td class="text-right col-sm-2">
+                        <label>终端号</label></td>
+                    <td class="col-sm-4">
+                        <input type="text" name="termid" class="easyui-validatebox">
+                    </td>
+                </tr>
+
+                <tr class="tf tf-create tf-update">
+                    <td class="text-right col-sm-2">
+                        <label>银行卡号</label></td>
+                    <td class="col-sm-4">
+                        <input type="text" name="cardno" class="easyui-validatebox">
+                    </td>
+                    <td class="text-right col-sm-2">
+                        <label>开户行号</label></td>
+                    <td class="col-sm-4">
+                        <input type="text" name="bankcode" class="easyui-validatebox">
+                    </td>
+                </tr>
+
+                <tr class="tf tf-create tf-update">
+                    <td class="text-right col-sm-2">
+                        <label>系统参考号</label></td>
+                    <td class="col-sm-4">
+                        <input type="text" name="refnbr" class="easyui-validatebox">
+                    </td>
+                    <td class="text-right col-sm-2">
+                        <label>POS流水号</label></td>
+                    <td class="col-sm-4">
+                        <input type="text" name="termssn" class="easyui-validatebox">
+                    </td>
+                </tr>
+
+                <tr class="tf tf-create tf-update">
+                    <td class="text-right col-sm-2">
+                        <label>所在地区</label>
+                    </td>
+                    <td class="col-sm-4">
+                        <select id="citycode" name="citycode" class="easyui-validatebox" style="width: 150px;">
+                            <option value="">--请选择--</option>
+                        </select>
+                        <select id="areacode" name="areacode" class="easyui-validatebox" style="width: 150px;">
+                            <option value="">--请选择--</option>
+                        </select>
+                    </td>
+                    <td class="text-right col-sm-2">
+                        <label>非税地区码</label>
+                    </td>
+                    <td class="col-sm-4">
+                        <input type="text" id="fscode" name="fscode" class="easyui-validatebox">
+                    </td>
+                </tr>
+
+                <tr class="tf tf-create tf-update">
+                    <td class="text-right col-sm-2">
+                        <label>交易金额</label>
+                    </td>
+                    <td class="col-sm-4">
+                        <input type="text" name="amount" class="easyui-validatebox">
+                    </td>
+                    <td class="text-right col-sm-2">
+                        <label>交易手续费</label>
+                    </td>
+                    <td class="col-sm-4">
+                        <input type="text" name="trans_fee" class="easyui-validatebox">
+                    </td>
+                </tr>
+            </table>
+            <div style="display:block; height:50px;"></div>
+            <!--div style="position:fixed; left: 0px; bottom:0px; z-index:8999; height:42px; background-color: #f2f2f2; width: 1000px; padding: 5px 10px; "-->
+            <div class="row">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-8">
+                    <button type="button" class="btn btn-default btn-outline" onclick="$$.close()">返回</button>
+                </div>
+                <div class="col-sm-2">
+                </div>
+            </div>
+            <!--/div-->
+        </form>
+    </div>
+</div>
+<script src="../lib/jquery/jquery.min.js"></script>
+<script src="../lib/jquery-iframe-transport/jquery.iframe-transport.js"></script>
+<script src="../lib/toastr/toastr.min.js"></script>
+<script src="../lib/My97DatePicker/WdatePicker.js"></script>
+<script src="../lib/jquery-easyui/jquery.easyui.js"></script>
+<script src="../lib/viewer/viewer.min.js"></script>
+<script src="../js/base.js"></script>
+<script src="../js/st.js"></script>
+<script src="../js/param.js"></script>
+<script src="../js/district.js"></script>
+<script>
+    var query = $$.parseQueryString();
+    var displayType = query.displayType;
+    var operateType = query.operateType;
+
+    var defaults = {
+        'view': {
+            title: '查看商户',
+            caption: '非税商户信息查看'
+        },
+        'update': {
+            title: '编辑商户',
+            caption: '非税商户信息修改'
+        },
+        'create': {
+            title: '新增商户',
+            caption: '非税商户信息录入'
+        },
+        'check': {
+            title: '商户审核',
+            caption: '非税商户信息审核'
+        }
+    };
+
+    function onLoadForm(data) {
+        $('#citycode').val(data.data.citycode).change();
+        $('#areacode').val(data.data.areacode);
+    }
+
+    function onSerializeForm(data) {
+        // 照片
+
+    }
+
+    function submitSuccess(data, result) {
+        var $form = $(this).closest('form');
+
+        $$.transform($form, 'view');
+
+        if (result.data) {
+            $form.form('load', result.data)
+        }
+
+        if (operateType == 'create') {
+            $$.confirm('操作成功,是否继续新增商户参数', function () {
+                var mchnt_id = $('#mchnt_id').val();
+                var url = $$.url('mchnt-param-detail.html?operateType=create', {
+                    displayType: displayType,
+                    mchnt_id: mchnt_id
+                });
+                window.location.href = url;
+            });
+        } else {
+            $$.success('操作成功');
+        }
+    }
+
+    function onChangeCity() {
+        var value = $(this).val();
+        $$.request('/action/bm/parameter/list', {
+            city: value,
+            district: '1'
+        }, function (data) {
+            $$.loadSelect('#district', data.district);
+        });
+    }
+
+    function onChangeDistrict() {
+        var value = $(this).val();
+        $('#fscode').val(value);
+    }
+
+    function fill_blank(selector, value) {
+        if (!$(selector).val()) {
+            $(selector).val(value)
+        }
+    }
+
+    function formatDate(value) {
+        return value ? value.substr(0, 10) : value;
+    }
+
+    function transtitle(type) {
+        alert(type + ' ' + document.title + defaults[type].caption);
+        document.title = defaults[type].title;
+        $('caption').html(defaults[type].caption);
+    }
+
+    $(function () {
+        $$.transform('.page', operateType, {
+            'create': [],
+            'update': [],
+            'check': ['create', 'update']
+        });
+
+        transtitle(displayType || 'view');
+
+        $('.easyui-validatebox').bind('blur', function () {
+            $(this).validatebox('enableValidation').validatebox('validate');
+        });
+        $('#citycode').on('change', onChangeCity);
+
+    });
+</script>
+</body>
+
+</html>

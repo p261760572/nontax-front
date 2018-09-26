@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>触发记录</title>
+    <link href="../../lib/font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="../../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="../../lib/layer/theme/default/layer.css" rel="stylesheet">
+    <link href="../../lib/jquery-easyui/themes/bootstrap/easyui.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+<div class="page">
+    <form id="ff" data-options="onSerialize:$.noop">
+        <table class="table" style="width: 970px;">
+            <caption>查询触发记录</caption>
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>ENTRY_ID：</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="entry_id">
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>触发器名称：</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="trigger_name">
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>触发时间：</label>
+                </td>
+                <td class="col-sm-4">
+                    <input id="fired_time" type="text" class="Wdate" name="fired_time" style="width: 120px;"
+                           onfocus="WdatePicker({onpicked:function(){$dp.$('fired_time2').focus();},maxDate:'#F{$dp.$D(\'fired_time2\')}'})">
+                    <input id="fired_time2" type="text" class="Wdate" name="fired_time2" style="width: 120px;"
+                           onfocus="WdatePicker({minDate:'#F{$dp.$D(\'fired_time\')}'})">
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>调度时间：</label>
+                </td>
+                <td class="col-sm-4">
+                    <input id="sched_time" type="text" class="Wdate" name="sched_time" style="width: 120px;"
+                           onfocus="WdatePicker({onpicked:function(){$dp.$('sched_time2').focus();},maxDate:'#F{$dp.$D(\'sched_time2\')}'})">
+                    <input id="sched_time2" type="text" class="Wdate" name="sched_time2" style="width: 120px;"
+                           onfocus="WdatePicker({minDate:'#F{$dp.$D(\'sched_time\')}'})">
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>状态：</label>
+                </td>
+                <td class="col-sm-4">
+                    <select name="state">
+                        <option value="">--请选择--</option>
+                        <option value="WAITING">等待中</option>
+                        <option value="ACQUIRED">调度中</option>
+                        <!--<option value="EXECUTING">处理中</option>-->
+                        <option value="BLOCKED">阻塞中</option>
+                        <option value="COMPLETE">已完成</option>
+                        <option value="ERROR">失败</option>
+                    </select>
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>任务参数(清算日期)：</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="job_param" class="Wdate" style="width: 120px;" onfocus="WdatePicker()">
+                </td>
+            </tr>
+            <tfoot>
+            <tr>
+                <td></td>
+                <td colspan="3">
+                    <button type="button" class="btn btn-primary"
+                            data-options="datagrid:'#dg',url:'/action/bm/job-fired-trigger/search'"
+                            onclick="$$.search(this)">查询
+                    </button>
+                    <button type="button" class="btn btn-default btn-outline" onclick="$$.reset(this)">重置</button>
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+    </form>
+    <div id="tb">
+        <a href="#" class="easyui-linkbutton" data-toggle="view"
+           data-options="iconCls:'fa fa-bars',plain:true">详情</a>
+        <a href="#" class="easyui-linkbutton" data-options="iconCls:'fa fa-bars',plain:true"
+           onclick="restart()">重启</a>
+        <a href="#" class="easyui-linkbutton" data-options="iconCls:'fa fa-bars',plain:true"
+           onclick="stop()">暂停调度</a>
+    </div>
+    <table id="dg" class="easyui-datagrid" title="触发记录"
+           data-options="singleSelect:true,pagination:true,rownumbers:true,toolbar:'#tb',idField:'entry_id'">
+        <thead>
+        <tr>
+            <!-- <th data-options="field:'chk',checkbox:true"></th> -->
+            <th data-options="field:'entry_id',width:100">ENTRY_ID</th>
+            <th data-options="field:'trigger_name',width:100">触发器名称</th>
+            <th data-options="field:'trigger_group',width:100,formatter:formatTriggerGroup">触发器组</th>
+            <th data-options="field:'fired_time',width:150,formatter:formatDate">触发时间</th>
+            <th data-options="field:'sched_time',width:150,formatter:formatDate">调度时间</th>
+            <th data-options="field:'priority',width:100,formatter:formatPriority">优先级</th>
+            <th data-options="field:'state',width:100,formatter:formatState">状态</th>
+            <th data-options="field:'job_name',width:100">任务ID</th>
+            <th data-options="field:'trigger_handler',width:100">触发器handler</th>
+            <th data-options="field:'job_param',width:100">任务参数</th>
+        </tr>
+        </thead>
+    </table>
+</div>
+<script src="../../lib/jquery/jquery.min.js"></script>
+<script src="../../lib/layer/layer.js"></script>
+<script src="../../lib/My97DatePicker/WdatePicker.js"></script>
+<script src="../../lib/jquery-easyui/jquery.easyui.min.js"></script>
+<script src="../../js/base.js"></script>
+<script src="../../js/st.js"></script>
+<script src="../../js/param.js"></script>
+<script src="../../js/district.js"></script>
+<script>
+    var query = $$.parseQueryString();
+    var displayType = query.displayType;
+    var operateType = query.operateType;
+
+    function reload() {
+        $('#dg').datagrid('reload');
+    }
+
+    function formatDate(value) {
+        if (value) {
+            return $$.formatDate(new Date(value * 1000), 'yyyy-MM-dd hh:mm:ss');
+        }
+    }
+
+    function restart() {
+        var row = $('#dg').datagrid('getSelected');
+        if (row === null) {
+            $$.msg('请选择记录！');
+            return false;
+        } else if ($.inArray(row.state, ['ERROR', 'PAUSED_BLOCKED', 'COMPLETE']) < 0) {
+            $$.msg('当前状态不能重启');
+            return false;
+        } else {
+            $$.confirm('确认要重启？', function () {
+                $$.request('/action/bm/job-fired-trigger/restart', {
+                    entry_id: row.entry_id
+                }, function () {
+                    reload();
+                    $$.msg('操作成功');
+                });
+            });
+        }
+    }
+
+     function stop() {
+        var row = $('#dg').datagrid('getSelected');
+        if (row === null) {
+            $$.msg('请选择记录！');
+            return false;
+        } else if ($.inArray(row.state, ['WAITING', 'ACQUIRED', 'ERROR']) < 0) {
+            $$.msg('当前状态不能暂停调度');
+            return false;
+        } else {
+            $$.confirm('确认要暂停调度？', function () {
+                $$.request('/action/bm/job-fired-trigger/stop', {
+                    entry_id: row.entry_id
+                }, function () {
+                    reload();
+                    $$.msg('操作成功');
+                });
+            });
+        }
+    }
+
+    var toggleOptions = {
+        url: 'job-fired-trigger-module.html',
+        options: {},
+        params: {
+            view: {
+                operateType: 'view'
+            }
+        }
+    };
+
+    function formatPriority(value) {
+        var rows = [{
+            'value': '1',
+            'text': '低'
+        }, {
+            'value': '2',
+            'text': '中'
+        }, {
+            'value': '3',
+            'text': '高'
+        }];
+
+        return $$.formatField(rows, value);
+    }
+
+
+    function formatState(value) {
+        var rows = [{
+            'value': 'WAITING',
+            'text': '等待中'
+        }, {
+            'value': 'ACQUIRED',
+            'text': '调度中'
+        }, {
+            'value': 'EXECUTING',
+            'text': '处理中'
+        }, {
+            'value': 'BLOCKED',
+            'text': '阻塞中'
+        }, {
+            'value': 'PAUSED_BLOCKED',
+            'text': '暂停调度'
+        }, {
+            'value': 'COMPLETE',
+            'text': '已完成'
+        }, {
+            'value': 'ERROR',
+            'text': '失败'
+        }];
+        return $$.formatField(rows, value);
+    }
+
+
+    function formatTriggerGroup(value) {
+        var rows = [{
+            'value': 'default',
+            'text': '默认组'
+        }];
+
+        return $$.formatField(rows, value);
+    }
+
+
+    $(function () {
+        $('form').on('keyup', function (event) {
+            if (event.keyCode == 13) {
+                $(this).find('button.btn-primary').click();
+            }
+        });
+
+        $('#tb a.easyui-linkbutton[data-toggle]').on('click', function (event) {
+            event.preventDefault();
+            $$.clickToolbar(this, toggleOptions);
+        });
+
+
+        $('#ff').find('button.btn-primary').click();
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>非税商户信息查询</title>
+    <link href="../lib/font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="../lib/layer/theme/default/layer.css" rel="stylesheet">
+    <link href="../lib/jquery-easyui/themes/bootstrap/easyui.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+<div class="page">
+    <form id="ff" data-options="onSerialize:serializeSearch">
+        <table class="table" style="width: 970px;">
+            <caption>查询商户信息</caption>
+            <tbody>
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>商户类型</label></td>
+                <td class="col-sm-4">
+                    <select id="mchttype" name="mchttype" class="easyui-validatebox" data-options="">
+                        <option value="" selected="selected">全部</option>
+                        <option value="0">互联网</option>
+                        <option value="1">POS</option>
+                        <option value="2">移动互联网</option>
+                        <option value="3">POS通</option>
+                    </select>
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>审核状态</label></td>
+                <td class="col-sm-4">
+                    <select id="review_status" name="review_status" class="easyui-validatebox" data-options="">
+                        <option value="" selected="selected">全部</option>
+                        <option value="0">未提交</option>
+                        <option value="2">通过</option>
+                        <option value="3">退回</option>
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>商户号</label></td>
+                <td class="col-sm-4">
+                    <input type="text" name="mchtid" class="easyui-validatebox" data-options="">
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>对账状态</label></td>
+                <td class="col-sm-4">
+                    <select name="mchtstate" class="easyui-validatebox" data-options="">
+                        <option value="" selected="selected">全部</option>
+                        <option value="1">启用</option>
+                        <option value="2">关闭</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>商户名称</label></td>
+                <td class="col-sm-4">
+                    <input type="text" name="mchtname" class="easyui-validatebox" data-options="">
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>非税地区</label></td>
+                <td class="col-sm-4">
+                    <div class="col-sm-12" style="padding:0;">
+                        <input type="text" id="fscode" name="fscode" class="easyui-combobox"
+                               data-options="valueField:'region_cd',textField:'city_name'">
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>开户银行</label>
+                </td>
+                <td class="col-sm-4">
+                    <div class="col-sm-12" style="padding:0;">
+                        <input type="text" id="bankcode" name="bankcode" class="easyui-combobox"
+                               data-options="valueField:'bankcode',textField:'bankname'">
+                    </div>
+                </td>
+                <td class="text-right col-sm-2">
+                    <label>终端版本</label></td>
+                <td class="col-sm-4">
+                    <select id="flag" name="flag" class="easyui-validatebox" data-options="">
+                        <option value="" selected="selected">全部</option>
+                        <option value="1">2.0版本</option>
+                        <option value="2">1.0版本</option>
+                    </select>
+                </td>
+            </tr>
+
+
+            </tbody>
+            <tfoot>
+            <tr>
+                <td></td>
+                <td colspan="3">
+                    <button type="button" class="btn btn-primary"
+                            data-options="datagrid:'#dg',url:'/action/bm/fs-mcht-info/search'"
+                            onclick="$$.search(this)">查询
+                    </button>
+                    <button type="button" class="btn btn-default btn-outline" onclick="$$.reset(this)">重置</button>
+                    <!-- <button type="button" class="btn btn-success" data-options="datagrid:'#dg',url:'/action/bm/fs-mcht-info/export'" onclick="$$.exportData(this)">导出</button> -->
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+    </form>
+    <table id="dg" class="easyui-datagrid" title="查询结果"
+           data-options="singleSelect:true,pagination:true,rownumbers:true,idField:'mchtid',collapsible:true">
+        <thead>
+        <tr>
+            <!--th data-options="field:'chk',checkbox:true"></th-->
+            <th data-options="field:'mchttype',width:80,formatter:formatMchtType">商户类型</th>
+            <th data-options="field:'mchtid',width:150">商户号</th>
+            <th data-options="field:'mchtname',width:200">商户名</th>
+            <th data-options="field:'bankcode',width:100">开户行号</th>
+            <th data-options="field:'bankname',width:180">开户行名</th>
+            <th data-options="field:'fscode',width:80">非税地区码</th>
+            <th data-options="field:'flag',width:100,formatter:formatFlag">终端版本</th>
+            <th data-options="field:'mchtstate',width:150,formatter:formatMchtState">对账状态</th>
+            <th data-options="field:'feetype',width:150">费率标准</th>
+            <th data-options="field:'review_status',width:150,formatter:formatReview">审核状态</th>
+            <th data-options="field:'bank_change_date',width:80">开户行变更日期</th>
+            <th data-options="field:'fscode_change_date',width:80">非税地区码变更日期</th>
+            <!--<th data-options="field:'op',width:300,formatter:formatOp">操作</th>-->
+        </tr>
+        </thead>
+    </table>
+</div>
+
+<script src="../lib/jquery/jquery.min.js"></script>
+<script src="../lib/layer/layer.js"></script>
+<script src="../lib/My97DatePicker/WdatePicker.js"></script>
+<script src="../lib/jquery-easyui/jquery.easyui.min.js"></script>
+<script src="../js/base.js"></script>
+<script src="../js/st.js"></script>
+<script src="../js/param.js"></script>
+<script src="../js/district.js"></script>
+<script>
+    var query = $$.parseQueryString();
+    var displayType = query.displayType;
+    var operateType = query.operateType;
+
+    var params = {
+        mchttype: [{
+            value: "0",
+            text: "互联网"
+        }, {
+            value: "1",
+            text: "POS"
+        }, {
+            value: "2",
+            text: "移动互联网"
+        }, {
+            value: "3",
+            text: "POS通"
+        }
+        ],
+        review_status: [{
+            value: "0",
+            text: "未提交"
+        }, {
+            value: "2",
+            text: "通过"
+        }, {
+            value: "3",
+            text: "退回"
+        }
+        ],
+        flag: [{
+            value: "1",
+            text: "2.0版本"
+        }, {
+            value: "2",
+            text: "1.0版本"
+        }
+        ],
+        mchtstate: [{
+            value: "1",
+            text: "启用"
+        }, {
+            value: "2",
+            text: "关闭"
+        }
+        ]
+    }
+
+    function serializeSearch(data) {
+        if(data.fscode) {
+            data.fscode = '9999' + data.fscode;
+        }
+    }
+
+    function onClickRow(rowIndex, rowData) {
+
+    }
+
+    function onChangeCity() {
+//        var value = $(this).val();
+//        $$.request('/action/bm/parameter/list', {
+//            city: value,
+//            district: '1'
+//        }, function (data) {
+//            $$.loadSelect('#areacode', data.district);
+//        });
+    }
+
+    function onChangeDistrict() {
+        var value = $(this).val();
+        $('#fscode').val(value);
+    }
+
+    function formatMchtType(value) {
+        return $$.formatField(params['mchttype'], value);
+    }
+
+    function formatReview(value) {
+        return $$.formatField(params['review_status'], value);
+    }
+
+    function formatFlag(value) {
+        return $$.formatField(params['flag'], value);
+    }
+
+    function formatMchtState(value) {
+        return $$.formatField(params['mchtstate'], value);
+    }
+
+    function formatOp(value, row) {
+        if (row.review_status == '0') {
+            return '<a href="javascript:;" class="btn btn-white btn-sm" data-toggle=""><i class="fa fa-folder"></i> 提交 </a> | <a href="fs-mcht-info-create.html" class="btn btn-white btn-sm" data-toggle="update"><i class="fa fa-pencil"></i> 编辑 </a> | <a href="fs-mcht-info-create.html" class="btn btn-white btn-sm" data-toggle="view"><i class="fa fa-folder"></i> 详细 </a> ';
+        } else {
+            return '<a href="fs-mcht-info-detail.html" class="btn btn-white btn-sm" data-toggle="update"><i class="fa fa-pencil"></i> 编辑 </a> | <a href="fs-mcht-info-create.html" class="btn btn-white btn-sm" data-toggle="view"><i class="fa fa-folder"></i> 详细 </a>';
+        }
+    }
+
+    $(function () {
+
+        $('#citycode').on('change', onChangeCity);
+
+        $('#areacode').on('change', onChangeDistrict);
+
+        $$.request('/action/bm/unionpay-region/list', {}, function (data) {
+            $('#fscode').combobox('loadData', data.rows);
+        });
+
+        $$.request('/action/bm/bank/list', {}, function (data) {
+            $('#bankcode').combobox('loadData', data.rows);
+        });
+
+        if (displayType == 'check') {
+            $('#review_status').html('<option value="0" selected="selected">未审核</option>');
+        }
+    });
+</script>
+</body>
+
+</html>

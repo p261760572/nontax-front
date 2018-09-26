@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>文件上传</title>
+    <link href="../../lib/font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="../../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="../../lib/layer/theme/default/layer.css" rel="stylesheet">
+    <link href="../../lib/jquery-easyui/themes/bootstrap/easyui.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+<div class="page">
+    <form id="ff" data-options="onSerialize:$.noop">
+        <table class="table" style="width: 970px;">
+            <caption>查询文件上传</caption>
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>清算日期：</label>
+                </td>
+                <td class="col-sm-4">
+                    <input id="settle_date" type="text" class="Wdate" name="settle_date" style="width: 120px;" onfocus="WdatePicker({onpicked:function(){$dp.$('settle_date2').focus();},maxDate:'#F{$dp.$D(\'settle_date2\')}'})">
+                    <input id="settle_date2" type="text" class="Wdate" name="settle_date2" style="width: 120px;" onfocus="WdatePicker({minDate:'#F{$dp.$D(\'settle_date\')}'})">
+                </td>
+
+                <td class="text-right col-sm-2">
+                    <label>状态：</label>
+                </td>
+                <td class="col-sm-4">
+                    <select id="status" name="status">
+                        <option value="">--请选择--</option>
+                        <option value="WAITING">等待中</option>
+                        <option value="ACQUIRED">调度中</option>
+                        <option value="BLOCKED">处理中</option>
+                        <option value="COMPLETE">已完成</option>
+                        <option value="ERROR">失败</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>处理类型：</label>
+                </td>
+                <td class="col-sm-4">
+                    <select name="process_mode">
+                        <option value="">--请选择--</option>
+                        <option value="ON">线上</option>
+                        <option value="OFF">线下</option>
+                    </select>
+                </td>
+                <td class="text-right col-sm-2">
+
+                </td>
+                <td class="col-sm-4">
+
+                </td>
+            </tr>
+
+            <tfoot>
+            <tr>
+                <td></td>
+                <td colspan="3">
+                    <button type="button" class="btn btn-primary"
+                            data-options="datagrid:'#dg',url:'/action/bm/ss-upload/search'" onclick="$$.search(this)">查询
+                    </button>
+                    <button type="button" class="btn btn-default btn-outline" onclick="$$.reset(this)">重置</button>
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+    </form>
+    <div id="tb">
+        <a href="#" class="easyui-linkbutton" data-toggle="view"
+           data-options="iconCls:'fa fa-bars',plain:true">查看</a>
+        <a href="#" class="easyui-linkbutton" data-options="iconCls:'fa fa-bars',plain:true"
+           onclick="upload()">批量上传</a>
+    </div>
+    <table id="dg" class="easyui-datagrid" title="文件上传"
+           data-options="singleSelect:true,pagination:true,rownumbers:true,toolbar:'#tb',idField:'batch_no'">
+        <thead>
+        <tr>
+            <th data-options="field:'chk',checkbox:true"></th>
+            <th data-options="field:'settle_date',width:100">清算日期</th>
+            <th data-options="field:'process_mode',width:100,formatter:formatProcessMode">处理类型</th>
+            <th data-options="field:'status',width:100,formatter:formatState">状态</th>
+            <th data-options="field:'batch_no',width:100">批次号</th>
+            <th data-options="field:'created_by',width:100">创建人</th>
+            <th data-options="field:'created_time',width:150">创建时间</th>
+        </tr>
+        </thead>
+    </table>
+</div>
+<script src="../../lib/jquery/jquery.min.js"></script>
+<script src="../../lib/layer/layer.js"></script>
+<script src="../../lib/My97DatePicker/WdatePicker.js"></script>
+<script src="../../lib/jquery-easyui/jquery.easyui.min.js"></script>
+<script src="../../js/base.js"></script>
+<script src="../../js/st.js"></script>
+<script src="../../js/param.js"></script>
+<script src="../../js/district.js"></script>
+<script>
+    var query = $$.parseQueryString();
+    var displayType = query.displayType;
+    var operateType = query.operateType;
+
+    function reload() {
+        $('#dg').datagrid('reload');
+    }
+
+    function upload() {
+        var rows = $('#dg').datagrid('getChecked');
+        if (rows.length === 0) {
+            $$.msg('请勾选记录！');
+            return false;
+        } else {
+            for (var i = 0; i < rows.length; i++) {
+                var row = rows[i];
+                if (row.status != 'WAITING') {
+                    $$.msg('状态不是等待中');
+                    return false;
+                }
+            }
+
+            $$.confirm('确认要上传勾选的记录？', function () {
+                $$.request('/action/bm/ss-upload/restart', {
+                    rows: rows
+                }, function () {
+                    reload();
+                    $$.msg('操作成功');
+                });
+            });
+        }
+    }
+
+    function formatState(value) {
+        var rows = [{
+            'value': 'WAITING',
+            'text': '等待中'
+        }, {
+            'value': 'ACQUIRED',
+            'text': '调度中'
+        }, {
+            'value': 'BLOCKED',
+            'text': '处理中'
+        }, {
+            'value': 'COMPLETE',
+            'text': '已完成'
+        }, {
+            'value': 'ERROR',
+            'text': '失败'
+        }];
+
+        return $$.formatField(rows, value);
+    }
+
+    function formatProcessMode(value) {
+        var rows = [{
+            value: 'ON',
+            text: '线上'
+        }, {
+            value: 'OFF',
+            text: '线下'
+        }];
+        return $$.formatField(rows, value);
+    }
+
+    var toggleOptions = {
+        url: 'ss-upload-list.html',
+        options: {},
+        params: {
+            view: {
+                operateType: 'view'
+            }
+        }
+    };
+
+    $(function () {
+        $('form').on('keyup', function (event) {
+            if (event.keyCode == 13) {
+                $(this).find('button.btn-primary').click();
+            }
+        });
+
+        $('#tb a.easyui-linkbutton[data-toggle]').on('click', function (event) {
+            event.preventDefault();
+            $$.clickToolbar(this, toggleOptions);
+        });
+
+
+        $('#ff').find('button.btn-primary').click();
+    });
+</script>
+</body>
+
+</html>

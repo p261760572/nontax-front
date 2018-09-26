@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>上传文件列表</title>
+    <link href="../../lib/font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="../../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="../../lib/layer/theme/default/layer.css" rel="stylesheet">
+    <link href="../../lib/jquery-easyui/themes/bootstrap/easyui.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+<div class="page">
+    <form id="ff" class="hide" data-options="onSerialize:$.noop">
+        <table class="table" style="width: 970px;">
+            <caption>查询上传文件列表</caption>
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>本地文件名：</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="local_filename">
+                </td>
+
+                <td class="text-right col-sm-2">
+                    <label>状态：</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="status">
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>批次号：</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="batch_no">
+                </td>
+
+                <td class="text-right col-sm-2">
+                    <label>文件类型：</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="file_type">
+                </td>
+            </tr>
+
+            <tfoot>
+            <tr>
+                <td></td>
+                <td colspan="3">
+                    <button type="button" class="btn btn-primary"
+                            data-options="datagrid:'#dg',url:'/action/bm/ss-upload-list/search'"
+                            onclick="$$.search(this)">查询
+                    </button>
+                    <button type="button" class="btn btn-default btn-outline" onclick="$$.reset(this)">重置</button>
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+    </form>
+    <div id="tb">
+        <!-- <a href="#" class="easyui-linkbutton" data-toggle="add" data-options="iconCls:'fa fa-plus-circle',plain:true">新增</a>
+        <a href="#" class="easyui-linkbutton" data-toggle="edit" data-options="iconCls:'fa fa-bars',plain:true">编辑</a> -->
+    </div>
+    <table id="dg" class="easyui-datagrid" title="上传文件列表"
+           data-options="singleSelect:true,pagination:true,rownumbers:true,toolbar:'#tb',idField:''">
+        <thead>
+        <tr>
+            <!-- <th data-options="field:'chk',checkbox:true"></th> -->
+            <th data-options="field:'local_filename',width:300">本地文件名</th>
+            <th data-options="field:'status',width:100">状态</th>
+            <!--<th data-options="field:'batch_no',width:100">批次号</th>-->
+            <th data-options="field:'file_type',width:100,formatter:formatFileType">文件类型</th>
+        </tr>
+        </thead>
+    </table>
+    <br>
+    <div style="width: 1000px;">
+        <div class="row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-6">
+                <button type="button" class="btn btn-default btn-outline" onclick="$$.close()">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../../lib/jquery/jquery.min.js"></script>
+<script src="../../lib/layer/layer.js"></script>
+<script src="../../lib/My97DatePicker/WdatePicker.js"></script>
+<script src="../../lib/jquery-easyui/jquery.easyui.min.js"></script>
+<script src="../../js/base.js"></script>
+<script src="../../js/st.js"></script>
+<script src="../../js/param.js"></script>
+<script src="../../js/district.js"></script>
+<script>
+    var query = $$.parseQueryString();
+    var displayType = query.displayType;
+    var operateType = query.operateType;
+
+    function reload() {
+        $('#dg').datagrid('reload');
+    }
+
+
+    function formatFileType(value) {
+        var rows = [{
+            value: "ON",
+            text: "线上对账文件"
+        }, {
+            value: "OFF",
+            text: "线下对账文件"
+        }];
+        return $$.formatField(rows, value);
+    }
+
+
+    var toggleOptions = {
+        url: 'ss-upload-list-detail.html',
+        options: {
+            add: {
+                selected: false,
+            }
+        },
+        params: {
+            add: {
+                operateType: 'create'
+            },
+            edit: {
+                operateType: 'update'
+            }
+        }
+    };
+
+    $(function () {
+        $('form').on('keyup', function (event) {
+            if (event.keyCode == 13) {
+                $(this).find('button.btn-primary').click();
+            }
+        });
+
+        $('#tb a.easyui-linkbutton').on('click', function (event) {
+            event.preventDefault();
+            $$.clickToolbar(this, toggleOptions);
+        });
+
+        $('#ff').form('load', query);
+
+        $('#ff').find('button.btn-primary').click();
+    });
+</script>
+</body>
+
+</html>

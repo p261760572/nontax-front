@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>处理批次</title>
+    <link href="../lib/font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="../lib/layer/theme/default/layer.css" rel="stylesheet">
+    <link href="../lib/jquery-easyui/themes/bootstrap/easyui.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+<div class="page">
+    <form id="ff" data-options="onSerialize:$.noop">
+        <table class="table" style="width: 970px;">
+            <caption>查询处理批次</caption>
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>商户号：</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="mchtid">
+                </td>
+
+                <td class="text-right col-sm-2">
+                    <label>批次号：</label>
+                </td>
+                <td class="col-sm-4">
+                    <input type="text" name="batch_no">
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right col-sm-2">
+                    <label>处理状态：</label>
+                </td>
+                <td class="col-sm-4">
+                    <!--<input type="text" name="proc_st" class="">-->
+                    <select name="proc_st" id="proc_st">
+                        <option value="">--请选择--</option>
+                        <option value="1">待申请</option>
+                        <option value="8">已申请</option>
+                    </select>
+                </td>
+
+                <td class="text-right col-sm-2">
+                </td>
+                <td class="col-sm-4">
+                </td>
+            </tr>
+
+            <tfoot>
+            <tr>
+                <td></td>
+                <td colspan="3">
+                    <button type="button" class="btn btn-primary" onclick="$$.search(this)"
+                            data-options="datagrid:'#dg',url:'/action/bm/fs-dz-zdsh/search'">
+                        查询
+                    </button>
+                    <button type="button" class="btn btn-default btn-outline" onclick="$$.reset(this)">重置</button>
+                    <!--<button type="button" class="btn btn-default" data-options="datagrid:'#dg',url:'/action/bm/fs-dz-zdsh/check1-pass'" onclick="$$.search(this)">重新生成对账</button>-->
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+    </form>
+    <div id="tb">
+        <a href="#" class="easyui-linkbutton" data-toggle="add" data-options="iconCls:'fa fa-plus-circle',plain:true">新增</a>
+        <a href="#" class="easyui-linkbutton" data-toggle="edit"
+           data-options="iconCls:'fa fa-bars',plain:true">编辑</a>
+        <a href="#" class="easyui-linkbutton" onclick="rehandle(this)"
+           data-options="iconCls:'fa fa-bars',plain:true">重新处理</a>
+    </div>
+
+    <table id="dg" class="easyui-datagrid" title="处理批次"
+           data-options="singleSelect:true,pagination:true,rownumbers:true,toolbar:'#tb',idField:'rec_id',onClickRow:onClickRow">
+        <thead>
+        <tr>
+            <th data-options="field:'batch_no',width:100">批次号</th>
+            <th data-options="field:'process_mode',width:100,formatter:formatProcessMode">处理类型</th>
+            <th data-options="field:'start_date',width:100,formatter:formatDate">开始日期</th>
+            <th data-options="field:'end_date',width:100,formatter:formatDate">结束日期</th>
+            <th data-options="field:'remark',width:100">备注</th>
+            <th data-options="field:'created_by',width:100">创建人</th>
+            <th data-options="field:'created_time',width:150">创建时间</th>
+            <th data-options="field:'proc_st',width:100,formatter:formatProcSt">处理状态</th>
+        </tr>
+        </thead>
+    </table>
+    <br>
+    <div id="tb2">
+        <a href="#" class="easyui-linkbutton" data-toggle="add"
+           data-options="iconCls:'fa fa-plus-circle',plain:true,onBefore:onBeforeAdd">新增</a>
+        <a href="#" class="easyui-linkbutton" onclick="$$.batchSubmit(this)"
+           data-options="iconCls:'fa fa-trash',plain:true,msg:'删除',url:'/action/bm/fs-dz-zdsh-lb/batch-delete'">删除</a>
+    </div>
+    <table id="dg2" class="easyui-datagrid" title="指定商户"
+           data-options="singleSelect:true,pagination:true,rownumbers:true,toolbar:'#tb2',idField:'rec_id'">
+        <thead>
+        <tr>
+            <th data-options="field:'chk',checkbox:true"></th>
+            <th data-options="field:'mchtid',width:150">商户号</th>
+            <th data-options="field:'created_by',width:100">创建人</th>
+            <th data-options="field:'created_time',width:150">创建时间</th>
+        </tr>
+        </thead>
+    </table>
+</div>
+<script src="../lib/jquery/jquery.min.js"></script>
+<script src="../lib/layer/layer.js"></script>
+<script src="../lib/My97DatePicker/WdatePicker.js"></script>
+<script src="../lib/jquery-easyui/jquery.easyui.min.js"></script>
+<script src="../js/base.js"></script>
+<script src="../js/st.js"></script>
+<script src="../js/param.js"></script>
+<script src="../js/district.js"></script>
+<script>
+    var query = $$.parseQueryString();
+    var displayType = query.displayType;
+    var operateType = query.operateType;
+    var selectedBatchNo = null;
+
+    function reload() {
+        $('#dg').datagrid('reload');
+    }
+
+    function reload2() {
+        $('#dg2').datagrid('reload');
+    }
+
+    var toggleOptions = {
+        url: 'fs-dz-zdsh-detail.html',
+        options: {
+            add: {
+                selected: false,
+            }
+        },
+        params: {
+            add: {
+                operateType: 'create'
+            },
+            edit: {
+                operateType: 'update'
+            }
+        }
+    };
+
+    function openIframe(url) {
+        var iframe = layer.open({
+            type: 2,
+            content: url,
+            area: ['80%', '80%'],
+            title: null
+        });
+    }
+
+
+    var toggleOptions2 = {
+        url: 'fs-dz-zdsh-lb-detail.html',
+        options: {
+            add: {
+                selected: false,
+                open: openIframe,
+                url: 'fs-mcht-info-search.html'
+            }
+        },
+        params: {
+            add: {
+                operateType: 'create',
+                batch_no: null
+            },
+            edit: {
+                operateType: 'update'
+            }
+        }
+    };
+
+    function formatDate(value) {
+        if (value) {
+            return value.substr(0, 10)
+        }
+    }
+
+    function onClickRow(rowIndex, rowData) {
+        var queryParams = {
+            batch_no: rowData.batch_no
+        };
+
+        toggleOptions2.params.add.batch_no = rowData.batch_no
+
+        $('#dg2').datagrid({
+            url: $$.wrapUrl('/action/bm/fs-dz-zdsh-lb/search'),
+            pageNumber: 1,
+            queryParams: queryParams,
+            onLoadSuccess: function (data) {
+                $(this).datagrid('clearChecked');
+                //解决滚动条引起的panel宽度问题
+                $(this).datagrid('getPanel').panel('resize');
+            }
+        });
+
+        if (rowData.proc_st == '1') {
+            $('#tb2').show();
+        } else {
+            $('#tb2').hide();
+        }
+    }
+
+    function onBeforeAdd() {
+        var row = $('#dg').datagrid('getSelected');
+        if (row === null) {
+            $$.msg('请选择批次！');
+            // return false;
+        }
+    }
+
+    function rehandle() {
+        var $dg = $('#dg');
+        var dgOpts = $dg.datagrid('options');
+        var row = $dg.datagrid('getSelected');
+
+        var opts = {
+            msg: '重新处理'
+        };
+
+        if (row) {
+            $$.confirm('确认要将选中的记录' + opts.msg + '？', function () {
+                $$.request('/action/bm/fs-dz-zdsh/check1-pass', row, function (result) {
+                    $$.msg('操作成功');
+                    $dg.datagrid('reload');
+                });
+            });
+        } else {
+            $$.msg('请选择记录！');
+            return false;
+        }
+    }
+
+    function formatProcSt(value) {
+        var rows = [{
+            value: '1',
+            text: '待申请'
+        }, {
+            value: '8',
+            text: '已申请'
+        }];
+        return $$.formatField(rows, value);
+    }
+
+
+    function formatProcessMode(value) {
+        var rows = [{
+            value: 'ON',
+            text: '线上'
+        }, {
+            value: 'OFF',
+            text: '线下'
+        }];
+        return $$.formatField(rows, value);
+    }
+
+    $(function () {
+        $('form').on('keyup', function (event) {
+            if (event.keyCode == 13) {
+                $(this).find('button.btn-primary').click();
+            }
+        });
+
+        $('#tb a.easyui-linkbutton[data-toggle]').on('click', function (event) {
+            event.preventDefault();
+            $$.clickToolbar(this, toggleOptions);
+        });
+
+        $('#tb2 a.easyui-linkbutton[data-toggle]').on('click', function (event) {
+            event.preventDefault();
+            $$.clickToolbar(this, toggleOptions2);
+        });
+
+
+        $('#ff').find('button.btn-primary').click();
+    });
+</script>
+</body>
+
+</html>
